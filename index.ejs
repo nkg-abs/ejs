@@ -1,1 +1,3 @@
-<button><%= button.content %></button>
+<% button.forEach(({ content }) => { %>
+    <button><%= content %></button>
+  <% }); %>

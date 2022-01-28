@@ -1,5 +1,10 @@
 {
-    "button": {
-        "content": "buttonOne"
-    }
+    "button": [
+        {
+            "content": "buttonOne"
+        },
+        {
+            "content": "buttonTwo"
+        }
+    ]
 }
