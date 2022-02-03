@@ -2,7 +2,7 @@ import { React } from 'react';
 
 const App = () =>
     <div>
-        <button><%= button.content %></button>
+        <button>buttonOne</button>
     </div>;
 
 export default App;
