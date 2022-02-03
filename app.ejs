@@ -1,0 +1,13 @@
+import { React } from 'react';
+<%_ App.forEach(({ name }) => { _%>
+import { <%= name %> } from './<%= name %>';
+<%_ }); _%>
+
+const App = () =>
+    <div>
+        <%_ App.forEach(({ name }) => { _%>
+        { <%= name %>() }
+        <%_ }); _%>
+    </div> 
+
+export default App;

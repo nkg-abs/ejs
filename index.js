@@ -1,11 +1,22 @@
 const ejs = require('ejs');
 const fs = require('fs');
-const data = require('./tpl.json');
+const config = require('./config')
 
-ejs.renderFile('index.ejs', data, (err, output) => {
-    fs.writeFile('output.js', output, (err) => {
-        if (err) throw err;
+const { App } = config;
+const exportData = (fileName, output) => fs.writeFile(`dist/${fileName}.js`, output, (err) => {
+    if (err) throw err;
+});
+
+App.map((component) => {
+    const { name } = component;
+    ejs.renderFile('component.ejs', component, (err, output) => {
+        exportData(name, output)
     });
 });
+
+ejs.renderFile('app.ejs', config, (err, output) => {
+    exportData('app', output)
+});
+
 
 
