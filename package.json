@@ -1,5 +1,6 @@
 {
 	"dependencies": {
+		"@laufire/utils": "^2.9.2",
 		"ejs": "^3.1.6"
 	}
 }
