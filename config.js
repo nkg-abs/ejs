@@ -1,16 +1,7 @@
 const config = {
-	App: [
-		{
-			type: 'button',
-			name: 'buttonOne',
-			content: 'buttonOne',
-		},
-		{
-			type: 'button',
-			name: 'buttonTwo',
-			content: 'buttonTwo',
-		}
-	]
+	source: {
+		url: 'git@github.com:Laufire/react-starter.git',
+	},
 };
 
 module.exports = config;
