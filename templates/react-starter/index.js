@@ -1,5 +1,5 @@
 const { source: { url }} = require('./config');
-const { readAndWrite } = require('../../src/lib/templateManager');
+const applyTemplate = require('../../src/lib/templateManager');
 const { collection: { map }} = require('@laufire/utils');
 const simpleGit = require('simple-git');
 
@@ -18,12 +18,12 @@ const init = async ({
 	map(content, (component) => {
 		const { name: componentName, type } = component;
 
-		readAndWrite(
+		applyTemplate(
 			`templates/${template}/${type}.ejs`, component, `dist/${name}/src/${componentName}.js`
 		);
 	});
 
-	readAndWrite(
+	applyTemplate(
 		`templates/${template}/app.ejs`, { App: content, map }, `dist/${name}/src/app.js`
 	);
 }
