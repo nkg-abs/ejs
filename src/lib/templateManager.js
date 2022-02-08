@@ -1,19 +1,16 @@
+const { fn } = require('@laufire/utils');
 const { renderFile } = require('ejs');
 const { promises: { writeFile } } = require('fs');
 
-const templateManager = ({ inputFile, data, outputFile }) => {
-	const fileOperations = {
-		write: async (output) => await writeFile(outputFile, output),
-		compile: async () => await renderFile(inputFile, data),
-		readAndWrite: async () => {
-			const output = await fileOperations.compile();
-			await fileOperations.write(output);
-		},
-	};
+const write = async (outputFile, output) => await writeFile(outputFile, output);
 
-	return fileOperations;
+const compile = async (inputFile, data) => await renderFile(inputFile, data);
+
+const readAndWrite = async (inputFile, data, outputFile) => {
+	const output = await compile(inputFile, data);
+	await write(outputFile, output);
 };
 
-module.export = templateManager;
+module.exports = { write, compile, readAndWrite };
 
 
