@@ -1,13 +1,13 @@
 import { React } from 'react';
-<%_ map(App, ({ name }) => { _%>
+<%_ map(content, ({ name }) => { _%>
 import { <%= name %> } from './<%= name %>';
 <%_ }); _%>
 
-const App = () =>
+const <%= name %> = () =>
 	<div>
-		<%_ map(App, ({ name }) => { _%>
+		<%_ map(content, ({ name }) => { _%>
 		{ <%= name %>() }
 		<%_ }); _%>
 	</div>;
 
-export default App;
+export default <%= name %>;

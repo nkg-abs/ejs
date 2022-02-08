@@ -1,7 +1,9 @@
 const { source: { url }} = require('./config');
-const applyTemplate = require('../../src/lib/templateManager');
-const { collection: { map }} = require('@laufire/utils');
+const { applyTemplate, transformContent } = require('../../src/lib/templateManager');
+const { collection } = require('@laufire/utils');
 const gitManager = require('../../src/lib/gitManager');
+
+const { map } = collection;
 
 const createRepo = async (name, sourceUrl, destinationUrl) => {
 	const { clone, remote } = gitManager(name, sourceUrl, destinationUrl);
@@ -15,17 +17,14 @@ const init = async ({
 }) => {
 	await createRepo(`dist/${name}`, url, destinationUrl);
 
-	map(content, (component) => {
-		const { name: componentName, type } = component;
+	const transformed = transformContent(content.concat({
+		type: 'app',
+		content: content,
+		name: 'app',
+	}), template, name, collection);
 
-		applyTemplate(
-			`templates/${template}/${type}.ejs`, component, `dist/${name}/src/${componentName}.js`
-		);
-	});
-
-	applyTemplate(
-		`templates/${template}/app.ejs`, { App: content, map }, `dist/${name}/src/app.js`
-	);
+	map(transformed, ({ inputFileName, data, outputFileName }) =>
+		applyTemplate(inputFileName, data, outputFileName));
 };
 
 module.exports = init;
