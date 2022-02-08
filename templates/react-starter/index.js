@@ -5,8 +5,8 @@ const gitManager = require('../../src/lib/gitManager');
 
 const { map } = collection;
 
-const createRepo = async (name, sourceUrl, destinationUrl) => {
-	const { clone, remote } = gitManager(name, sourceUrl, destinationUrl);
+const createRepo = async (config) => {
+	const { clone, remote } = gitManager(config);
 
 	await clone();
 	await remote();
@@ -15,7 +15,11 @@ const createRepo = async (name, sourceUrl, destinationUrl) => {
 const init = async ({
 	name, template, repo: { url: destinationUrl }, content
 }) => {
-	await createRepo(`dist/${name}`, url, destinationUrl);
+	await createRepo({
+		name: `dist/${name}`,
+		sourceUrl: url,
+		destinationUrl
+	});
 
 	const transformed = transformContent(content.concat({
 		type: 'app',
@@ -23,8 +27,7 @@ const init = async ({
 		name: 'app',
 	}), template, name, collection);
 
-	map(transformed, ({ inputFileName, data, outputFileName }) =>
-		applyTemplate(inputFileName, data, outputFileName));
+	map(transformed, applyTemplate);
 };
 
 module.exports = init;
