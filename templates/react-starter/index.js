@@ -1,19 +1,19 @@
 const { source: { url }} = require('./config');
 const applyTemplate = require('../../src/lib/templateManager');
 const { collection: { map }} = require('@laufire/utils');
-const simpleGit = require('simple-git');
+const gitManager = require('../../src/lib/gitManager');
 
-const git = simpleGit();
-const createRepo = async (name, destinationUrl) => {
-	await git
-	.clone(url, `dist/${name}`)
-	.remote('set-url', 'origin', destinationUrl);
-}
+const createRepo = async (name, sourceUrl, destinationUrl) => {
+	const { clone, remote } = gitManager(name, sourceUrl, destinationUrl);
+
+	await clone();
+	await remote();
+};
 
 const init = async ({
 	name, template, repo: { url: destinationUrl }, content
 }) => {
-	await createRepo(name, destinationUrl);
+	await createRepo(`dist/${name}`, url, destinationUrl);
 
 	map(content, (component) => {
 		const { name: componentName, type } = component;
@@ -26,6 +26,6 @@ const init = async ({
 	applyTemplate(
 		`templates/${template}/app.ejs`, { App: content, map }, `dist/${name}/src/app.js`
 	);
-}
+};
 
 module.exports = init;
