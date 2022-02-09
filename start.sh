@@ -1,7 +1,6 @@
 set -e
 cd "$(dirname "$0")"
 
-cd "./dist"
-rm -rf trial
-cd "../"
+rm -rf ./dist/trial/
+
 node "index.js"
