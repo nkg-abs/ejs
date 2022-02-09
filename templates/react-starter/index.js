@@ -1,34 +1,20 @@
 const { source: { url }} = require('./config');
 const { applyTemplate, transformContent } = require('../../src/lib/templateManager');
+const prepareBase = require('../../src/lib/prepareBase');
 const { collection } = require('@laufire/utils');
-const gitManager = require('../../src/lib/gitManager');
-const shell = require('shelljs');
 
 const { map } = collection;
 
-const createRepo = async (config) => {
-	const { clone, remote } = gitManager(config);
+const init = async (config) => {
+	const { content, name, template } = config;
 
-	await clone();
-	await remote();
-};
+	await prepareBase({ config: { ...config, sourceUrl: url } });
 
-const init = async ({
-	name, template, repo: { url: destinationUrl }, content
-}) => {
-	await createRepo({
-		name: `dist/${name}`,
-		sourceUrl: url,
-		destinationUrl
-	});
-
-	shell.exec(`sh ./dist/${name}/reset.sh`);
-
-	const transformed = transformContent(content.concat({
+	const transformed = transformContent([ ...content, {
 		type: 'app',
 		content: content,
 		name: 'app',
-	}), template, name, collection);
+	}], template, name, collection);
 
 	map(transformed, applyTemplate);
 };
