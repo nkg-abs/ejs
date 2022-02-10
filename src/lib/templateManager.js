@@ -13,7 +13,7 @@ const applyTemplate = async ({ inputFileName, data, outputFileName }) => {
 	await write(outputFileName, output);
 };
 
-const transformContent = ({ content, template, name, lib }) =>
+const transformContent = ({ config: { content, template, name, lib }}) =>
 	map(content, ({ content, type, name: componentName }) => ({
 			inputFileName: `templates/${template}/${type}.ejs`,
 			data: { content, name: componentName, ...lib },
@@ -21,8 +21,8 @@ const transformContent = ({ content, template, name, lib }) =>
 		})
 	);
 
-const renderTemplate = async ({ config }) => {
-	const transformed = transformContent({ ...config, lib: collection });
+const renderTemplate = async (context) => {
+	const transformed = transformContent(context);
 	await map(transformed, applyTemplate);
 };
 

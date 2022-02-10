@@ -1,7 +1,10 @@
 const { source: { url }} = require('./config');
-const { renderTemplate } = require('../../src/lib/templateManager');
+const templateManager = require('../../src/lib/templateManager');
 const prepareBase = require('../../src/lib/prepareBase');
 const { collection } = require('@laufire/utils');
+
+const lib = { ...collection };
+const { renderTemplate } = templateManager;
 
 const init = async (config) => {
 	const { content } = config;
@@ -18,7 +21,8 @@ const init = async (config) => {
 					content: content,
 					name: 'app',
 				}
-			]
+			],
+			lib,
 		}
 	});
 };
