@@ -13,6 +13,8 @@ const applyTemplate = async ({ inputFileName, data, outputFileName }) => {
 	await write(outputFileName, output);
 };
 
+const properCase = (name) => `${name.slice(0, 1).toUpperCase()}${name.slice(1)}`;
+
 const transformContent = ({ config: { content, template, name, lib }}) =>
 	map(content, ({ content, type, name: componentName }) => ({
 			inputFileName: `templates/${template}/${type}.ejs`,
@@ -26,4 +28,4 @@ const renderTemplate = async (context) => {
 	await map(transformed, applyTemplate);
 };
 
-module.exports = { renderTemplate };
+module.exports = { renderTemplate, properCase };
