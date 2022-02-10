@@ -16,7 +16,6 @@ const config = {
 			content: 'buttonTwo',
 		},
 	],
-	lib: ['collection'],
 };
 
 module.exports = config;
