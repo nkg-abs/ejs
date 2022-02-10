@@ -1,6 +1,8 @@
 const { renderFile } = require('ejs');
 const { promises: { writeFile } } = require('fs');
-const { map } = require('@laufire/utils/collection');
+const collection = require('@laufire/utils/collection');
+
+const { map } = collection;
 
 const write = async (outputFile, output) => await writeFile(outputFile, output);
 
@@ -11,12 +13,17 @@ const applyTemplate = async ({ inputFileName, data, outputFileName }) => {
 	await write(outputFileName, output);
 };
 
-const transformContent = (components, template, name, lib) =>
-	map(components, ({ content , type, name: componentName }) => ({
+const transformContent = ({ content, template, name, lib }) =>
+	map(content, ({ content, type, name: componentName }) => ({
 			inputFileName: `templates/${template}/${type}.ejs`,
 			data: { content, name: componentName, ...lib },
 			outputFileName: `dist/${name}/src/${componentName}.js`,
 		})
 	);
 
-module.exports = { applyTemplate, transformContent };
+const renderTemplate = async ({ config }) => {
+	const transformed = transformContent({ ...config, lib: collection });
+	await map(transformed, applyTemplate);
+};
+
+module.exports = { renderTemplate };
