@@ -16,10 +16,10 @@ const applyTemplate = async ({ inputFileName, data, outputFileName }) => {
 const properCase = (name) => `${name.slice(0, 1).toUpperCase()}${name.slice(1)}`;
 
 const transformContent = ({ config: { content, template, name, lib }}) =>
-	map(content, ({ content, type, name: componentName }) => ({
-			inputFileName: `templates/${template}/${type}.ejs`,
+	map(content, ({ content, type, name: componentName, fileName }) => ({
+			inputFileName: `templates/${ template }/${ type }.ejs`,
 			data: { content, name: componentName, ...lib },
-			outputFileName: `dist/${name}/src/${componentName}.js`,
+			outputFileName: `dist/${ name }/src/${ fileName || componentName }.js`,
 		})
 	);
 

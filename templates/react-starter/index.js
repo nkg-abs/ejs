@@ -17,6 +17,7 @@ const init = async ({ config }) => {
 					type: 'app',
 					content: content,
 					name: 'app',
+					fileName: 'App'
 				}
 			],
 		},
