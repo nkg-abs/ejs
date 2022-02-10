@@ -1,13 +1,13 @@
 import { React } from 'react';
 <%_ map(content, ({ name }) => { _%>
-import { <%= name %> } from './<%= name %>';
+import <%= properCase(name) %> from './<%= name %>';
 <%_ }); _%>
 
-const <%= name %> = () =>
+const <%= properCase(name) %> = () =>
 	<div>
 		<%_ map(content, ({ name }) => { _%>
-		{ <%= name %>() }
+		{ <%= properCase(name) %>() }
 		<%_ }); _%>
 	</div>;
 
-export default <%= name %>;
+export default <%= properCase(name) %>;
