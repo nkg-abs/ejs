@@ -1,9 +1,7 @@
 const config = {
 	name: 'trial',
 	template: 'react-starter',
-	repo: {
-		url: 'git@github.com:Laufire/react-starter.git',
-	},
+	target: 'git@github.com:Laufire/demo.git',
 	content: [
 		{
 			type: 'button',
