@@ -1,12 +1,13 @@
 const gitManager = require('./gitManager');
 const shell = require('shelljs');
 
-const prepareBase = async ({ config }) => {
-	const { clone, setRemote } = gitManager(config);
+const prepareBase = async (context) => {
+	const { config: { name }} = context;
+	const { clone, setRemote } = gitManager(context);
 
 	await clone();
 
-	shell.exec(`sh ./dist/${config.name}/reset.sh`);
+	shell.exec(`sh ./dist/${ name }/reset.sh`);
 
 	await setRemote();
 };
