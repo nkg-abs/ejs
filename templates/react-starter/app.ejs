@@ -4,7 +4,7 @@ import <%= properCase(name) %> from './<%= name %>';
 <%_ }); _%>
 
 const <%= properCase(name) %> = () =>
-	<div>
+	<div role="<%= properCase(name) %>">
 		<%_ map(content, ({ name }) => { _%>
 		{ <%= properCase(name) %>() }
 		<%_ }); _%>
