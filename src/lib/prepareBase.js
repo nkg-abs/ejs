@@ -3,7 +3,7 @@ const shell = require('shelljs');
 
 const prepareBase = async (context) => {
 	const { config: { name }} = context;
-	const { clone, setRemote } = gitManager(context);
+	const { clone, setRemote } = gitManager({ ...context, localPath: `dist/${ name }`});
 
 	await clone();
 
