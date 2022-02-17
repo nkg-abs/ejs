@@ -2,26 +2,26 @@ const gitManager = require('./gitManager');
 const { properCase } = require('./templateManager');
 const { map } = require('@laufire/utils/collection');
 
-const localPath = 'dist/appConfig';
-const initialConfig = { config: {}, source: 'git@github.com:nkg-laufire/simpleUI.git', localPath };
 const toBaseRelative = '../../';
 
 const repoManager = {
-	read: async () => {
-		const { clone } = gitManager(initialConfig);
+	read: async (context) => {
+		const { localPath } = context;
+		const { clone } = gitManager(context);
+
 		await clone();
+		const { log } = gitManager(context);
+		const { latest: details } = await log();
+		const config = require(`${ toBaseRelative }${ localPath }/config`);
+
+		return { ...context, config, details };
 	},
 
-	buildContext: async () => {
-		const { log } = gitManager({ ...initialConfig, path: localPath});
-		const { latest: details } = await log();
-		const config = require(`${toBaseRelative}${ localPath }/config`);
-		return { config: { ...config, lib: { map, properCase }, details }};
-	},
+	buildContext: (context) => ({ ...context, lib: { map, properCase }}),
 
 	processTemplate: async (context) => {
 		const { config: { template }} = context;
-		const init = require(`${toBaseRelative}templates/${ template }/index`);
+		const init = require(`${ toBaseRelative }templates/${ template }/index`);
 
 		await init(context);
 	},

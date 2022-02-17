@@ -1,15 +1,15 @@
 const { source } = require('./config');
 const templateManager = require('../../src/lib/templateManager');
 const prepareBase = require('../../src/lib/prepareBase');
-const saveCode = require('../../src/lib/saveCode');
 const { renderTemplate } = templateManager;
 
 const init = async (context) => {
-	const { config: { content, name }, config } = context;
+	const { config: { content }, config } = context;
 
 	await prepareBase({ ...context, source });
 
 	await renderTemplate({
+		...context,
 		config: {
 			...config,
 			content: [
@@ -18,13 +18,11 @@ const init = async (context) => {
 					type: 'app',
 					content: content,
 					name: 'app',
-					fileName: 'App'
-				}
+					fileName: 'App',
+				},
 			],
 		},
 	});
-
-	await saveCode({ ...context, source, path: `./dist/${ name }/` });
 };
 
 module.exports = init;
