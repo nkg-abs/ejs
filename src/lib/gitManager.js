@@ -1,14 +1,12 @@
 const simpleGit = require('simple-git');
-const { existsSync } = require('fs');
 
-const gitManager = ({ config: { name, target } = {}, source, localPath }) => {
-	const exists = existsSync(localPath);
-	const git = simpleGit( exists ? localPath : '');
+const gitManager = ({ config: { target } = {}, source, localPath }) => {
+	const git = simpleGit(localPath);
 
 	return {
-		clone: async () => exists || await git.clone(source, localPath),
+		clone: async (path = localPath) => await git.clone(source, path),
 		setRemote: async () => await git.remote(
-			'set-url', 'origin', target,
+			['add', 'origin', target]
 		),
 		add: async (files) => await git.add(files),
 		commit: async (message) => await git.commit(message),
