@@ -1,22 +1,16 @@
 const gitManager = require('./gitManager');
-const shell = require('shelljs');
-const { existsSync } = require('fs');
+const { ensureTarget, resetTarget } = require('./repoManager');
 
 const prepareBase = async (context) => {
-	const { config: { name }} = context;
-	const target = `dist/${ name }`;
-	const { clone } = gitManager({
-		...context,
-		localPath: '',
-	});
+	const { targetPath } = context;
 
-	existsSync(target) || await clone(target);
+	await ensureTarget(context);
 
-	shell.exec(`sh ./${ target }/reset.sh`);
+	resetTarget(context);
 
 	const { setRemote } = gitManager({
 		...context,
-		localPath: target,
+		localPath: targetPath,
 	});
 
 	await setRemote();
