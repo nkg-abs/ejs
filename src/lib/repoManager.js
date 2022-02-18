@@ -1,6 +1,6 @@
 const gitManager = require('./gitManager');
 const { properCase } = require('./templateManager');
-const { map } = require('@laufire/utils/collection');
+const { map, reduce } = require('@laufire/utils/collection');
 const { existsSync } = require('fs');
 
 const toBaseRelative = '../../';
@@ -12,7 +12,12 @@ const repoManager = {
 
 		existsSync(localPath) || await clone(localPath);
 		const { log } = gitManager(context);
-		const { latest: details } = await log();
+		const { latest } = await log();
+		const details = reduce(
+			latest, (
+				acc, value, key,
+			) => ({ ...acc, [key.slice(key.indexOf('_') + 1)]: value }), {},
+		);
 		const config = require(`${ toBaseRelative }${ localPath }/config`);
 
 		return { ...context, config, details };
