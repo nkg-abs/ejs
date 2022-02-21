@@ -9,9 +9,6 @@ const toBaseRelative = '../../';
 const repoManager = {
 	read: async (context) => {
 		const { localPath } = context;
-		const { clone } = gitManager({ ...context, localPath: '' });
-
-		existsSync(localPath) || await clone(localPath);
 		const { log } = gitManager(context);
 		const { latest } = await log();
 		const details = reduce(
