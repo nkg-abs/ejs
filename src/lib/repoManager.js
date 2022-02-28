@@ -3,6 +3,7 @@ const { properCase } = require('./templateManager');
 const { map, reduce } = require('@laufire/utils/collection');
 const { existsSync } = require('fs');
 const shell = require('shelljs');
+const { isIterable } = require('@laufire/utils/reflection');
 
 const toBaseRelative = '../../';
 
@@ -48,6 +49,27 @@ const repoManager = {
 	},
 
 	resetTarget: ({ targetPath }) => shell.exec(`sh ./${ targetPath }/reset.sh`),
+
+	normalizeContent: (context) => {
+		const { config: { content: components }, config } = context;
+
+		const buildContent = (components) => map(components, (component, key) => {
+			const { content } = component;
+
+			const childContent = isIterable(content)
+				? buildContent(content)
+				: content;
+
+			return {
+				name: key,
+				...component,
+				content: childContent,
+			};
+		});
+		const normalizedContent = buildContent(components);
+
+		return { ...context, config: { ...config, content: normalizedContent }};
+	},
 };
 
 module.exports = repoManager;
