@@ -4,16 +4,12 @@ const { ensureTarget, resetTarget } = require('./repoManager');
 const prepareBase = async (context) => {
 	const { targetPath } = context;
 
-	await ensureTarget(context);
-
-	resetTarget(context);
-
-	const { setRemote } = gitManager({
+	await ensureTarget({
 		...context,
 		localPath: targetPath,
 	});
 
-	await setRemote();
+	resetTarget(context);
 };
 
 module.exports = prepareBase;

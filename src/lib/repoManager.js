@@ -9,7 +9,7 @@ const toBaseRelative = '../../';
 const repoManager = {
 	read: async (context) => {
 		const { localPath } = context;
-		const { log } = gitManager(context);
+		const { log } = gitManager(localPath);
 		const { latest } = await log();
 		const details = reduce(
 			latest, (
@@ -32,17 +32,10 @@ const repoManager = {
 		await init(context);
 	},
 
-	ensureTarget: async (context) => {
-		const { targetPath } = context;
-
-		existsSync(targetPath) || await gitManager({
-			...context,
-			localPath: '',
-		}).clone(targetPath);
-	},
+	ensureTarget: async ({ source, targetPath }) =>
+		existsSync(targetPath) || await gitManager('').clone({ source, localPath: targetPath }),
 
 	resetTarget: ({ targetPath }) => shell.exec(`sh ./${ targetPath }/reset.sh`),
-
 };
 
 module.exports = repoManager;
