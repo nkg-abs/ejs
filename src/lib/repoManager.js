@@ -32,8 +32,20 @@ const repoManager = {
 		await init(context);
 	},
 
-	ensureTarget: async ({ source, targetPath }) =>
-		existsSync(targetPath) || await gitManager('').clone({ source, localPath: targetPath }),
+	ensureTarget: async (context) => {
+		const { targetPath } = context;
+		const createBase = async ({ source }) => {
+			shell.mkdir(targetPath);
+
+			const { init, setRemote, pull } = gitManager(targetPath);
+
+			await init();
+			await setRemote(['add', 'origin', source]);
+			await pull(['origin', 'master']);
+		};
+
+		existsSync(targetPath) || await createBase(context);
+	},
 
 	resetTarget: ({ targetPath }) => shell.exec(`sh ./${ targetPath }/reset.sh`),
 };

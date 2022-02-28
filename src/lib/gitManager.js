@@ -12,6 +12,8 @@ const gitManager = (localPath) => {
 		commit: async (message) => await git.commit(message),
 		log: async (commands = []) => await git.log(...commands),
 		setConfig: async (config) => await git.addConfig(...config),
+		init: async () => await git.init(),
+		pull: async (commands) => await git.pull(...commands),
 	};
 };
 
