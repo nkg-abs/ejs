@@ -7,6 +7,44 @@ const { isIterable } = require('@laufire/utils/reflection');
 
 const toBaseRelative = '../../';
 
+const normalizeChild = (components) =>
+	map(components, (component, key) => {
+		const { content } = component;
+
+		const childContent = isIterable(content)
+			? normalizeChild(content)
+			: content;
+
+		return {
+			name: key,
+			...component,
+			content: childContent,
+		};
+	});
+
+const reduceChild = (components, parentKey = '') => reduce(
+	components, (acc, component) => {
+		const { name, props, content } = component;
+		const iterable = isIterable(content);
+
+		const childComponents = iterable && reduceChild(content, `${ parentKey }/${ name }`);
+
+		return {
+			...acc,
+			[name]: {
+				name: name,
+				props: props,
+				children: {
+					type: iterable ? 'component' : 'text',
+					content: content,
+				},
+				outputPath: `.${ parentKey }/${ name }/index.js`,
+			},
+			...childComponents,
+		};
+	}, {},
+);
+
 const repoManager = {
 	read: async (context) => {
 		const { localPath } = context;
@@ -51,24 +89,27 @@ const repoManager = {
 	resetTarget: ({ targetPath }) => shell.exec(`sh ./${ targetPath }/reset.sh`),
 
 	normalizeContent: (context) => {
-		const { config: { content: components }, config } = context;
+		const { config: { content }, config } = context;
 
-		const buildContent = (components) => map(components, (component, key) => {
-			const { content } = component;
+		return {
+			...context,
+			config: {
+				...config,
+				content: normalizeChild(content),
+			},
+		};
+	},
 
-			const childContent = isIterable(content)
-				? buildContent(content)
-				: content;
+	buildContent: (context) => {
+		const { config: { content }, config } = context;
 
-			return {
-				name: key,
-				...component,
-				content: childContent,
-			};
-		});
-		const normalizedContent = buildContent(components);
-
-		return { ...context, config: { ...config, content: normalizedContent }};
+		return {
+			...context,
+			config: {
+				...config,
+				content: reduceChild(content),
+			},
+		};
 	},
 };
 
