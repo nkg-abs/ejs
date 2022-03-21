@@ -1,0 +1,22 @@
+import { React } from 'react';
+<%_ if(children.type === 'component'){ _%>
+<%_ map(children.content, ({ name }) => { _%>
+import <%= name %> from './<%= name %>';
+<%_ }); _%>
+<% } %>
+
+const <%= properCase(name) %> = () => {
+	return(
+	<%_ if(children.type === 'text'){ _%>
+		'<%= children.content %>'
+	<%_ } else { _%>
+		<%_ map(children.content, ({ name }) => { _%>
+		<<%= name %> { ...{<%_ map(props, (value, name) => { _%><%= name %>:'<%= value %>'<%_ }); _%>} }/>
+	<%_ }); _%>
+	<%_ } _%>
+	);
+};
+
+
+export default <%= properCase(name) %>;
+
