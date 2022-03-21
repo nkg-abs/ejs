@@ -38,7 +38,7 @@ const reduceChild = (components, parentKey = '') => reduce(
 					type: iterable ? 'component' : 'text',
 					content: content,
 				},
-				outputPath: `.${ parentKey }/${ name }/index.js`,
+				outputPath: `./${ parentKey }/${ name }/index.js`,
 			},
 			...childComponents,
 		};
@@ -101,13 +101,13 @@ const repoManager = {
 	},
 
 	buildContent: (context) => {
-		const { config: { content }, config } = context;
+		const { config: { content }, config, targetPath } = context;
 
 		return {
 			...context,
 			config: {
 				...config,
-				content: reduceChild(content),
+				content: reduceChild(content, `${ targetPath }/src`),
 			},
 		};
 	},
