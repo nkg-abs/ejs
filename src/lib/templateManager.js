@@ -3,7 +3,7 @@ const shell = require('shelljs');
 const collection = require('@laufire/utils/collection');
 const { writeFileSync, existsSync } = require('fs');
 
-const { map, reduce } = collection;
+const { map, reduce, values } = collection;
 
 const write = (outputFile, output) => writeFileSync(outputFile, output);
 
@@ -26,18 +26,27 @@ const prepareStructure = ({ directories, output }) =>
 		}, '.',
 	);
 
-const processTemplate = (context) => {
+const processTemplate = async (context) => {
 	const { config: { template, content: components }, lib } = context;
 
-	map(components, async (data) => {
+	const results = map(components, async (data) => {
 		const { outputPath } = data;
 		const directories = outputPath.split('/').filter((dir) =>
 			!['.', 'index.js'].includes(dir));
 		const output = await compile(`templates/${ template }/component.ejs`,
-			{ ...data, ...lib });
+		{ ...data, ...lib });
 
-		prepareStructure({ directories, output });
+		return { directories, output };
 	});
+
+	const config = await Promise.all(values(results));
+	const { results: resolved } = reduce(components, (acc, value, name) => {
+		const { results, components: [component], components } = acc;
+
+		return { results: { ...results, [name]: component }, components: components.slice(1)}
+	}, { results: {}, components: config });
+
+	context.config.content = resolved;
 };
 
-module.exports = { properCase, processTemplate };
+module.exports = { properCase, processTemplate, prepareStructure, write };
