@@ -31,12 +31,10 @@ const processTemplate = async (context) => {
 
 	const results = map(components, async (data) => {
 		const { outputPath } = data;
-		const directories = outputPath.split('/').filter((dir) =>
-			!['.', 'index.js'].includes(dir));
 		const output = await compile(`templates/${ template }/component.ejs`,
 		{ ...data, ...lib });
 
-		return { directories, output };
+		return { path: outputPath, output };
 	});
 
 	const config = await Promise.all(values(results));

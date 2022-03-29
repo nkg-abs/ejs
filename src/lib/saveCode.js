@@ -1,25 +1,20 @@
 const gitManager = require('./gitManager');
 const shell = require('shelljs');
 const { reduce, map } = require('@laufire/utils/collection');
-const { existsSync } = require('fs');
+const { existsSync, mkdirSync } = require('fs');
 const { write } = require('../lib/templateManager');
 
 const saveCode = {
 	writeCode: ({ config: { content }}) =>
-		map(content, ({ directories, output}) => {
-			reduce(
-				directories, (acc, dir) => {
-					const currentPath = `${ acc }/${ dir }`;
-					const createComponent = () => {
-						shell.mkdir(currentPath);
-						write(`${ currentPath }/index.js`, output);
-					};
+		map(content, ({ path, output}) => {
+			const parentPath = path.replace(/\/index.js/, '');
 
-					existsSync(currentPath) || createComponent();
+			const ensureParent = () => {
+				mkdirSync(parentPath);
+				write(`${ parentPath }/index.js`, output);
+			};
 
-					return currentPath;
-				}, '.',
-			)
+			existsSync(parentPath) || ensureParent();
 		}),
 
 	commitCode: async (context) => {
