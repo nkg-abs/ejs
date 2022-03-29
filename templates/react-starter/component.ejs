@@ -1,22 +1,27 @@
 import { React } from 'react';
 <%_ if(children.type === 'component'){ _%>
 <%_ map(children.content, ({ name }) => { _%>
-import <%= name %> from './<%= name %>';
+import <%= properCase(name) %> from './<%= name %>';
 <%_ }); _%>
-<% } %>
+<%_ } _%>
 
-const <%= properCase(name) %> = () => {
-	return(
+const <%= properCase(name) %> = () =>
 	<%_ if(children.type === 'text'){ _%>
-		'<%= children.content %>'
+	<<%= type %>{ ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }><%= children.content %></<%= type %>>;
 	<%_ } else { _%>
-		<%_ map(children.content, ({ name }) => { _%>
-		<<%= name %> { ...{<%_ map(props, (value, name) => { _%><%= name %>:'<%= value %>'<%_ }); _%>} }/>
+	<%_ if(keys(children.content).length === 1){ _%>
+	<<%= type %> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }>
+	<%_ map(children.content, ({ name }) => { _%>
+		<<%= properCase(name) %>/>
 	<%_ }); _%>
+	</<%= type %>>;
+	<%_ } else { _%>
+	<div { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }>
+	<%_ map(children.content, ({ name }) => { _%>
+		<<%= properCase(name) %>/>
+	<%_ }); _%>
+	</div>;
 	<%_ } _%>
-	);
-};
-
+	<%_ } _%>
 
 export default <%= properCase(name) %>;
-

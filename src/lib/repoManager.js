@@ -1,6 +1,6 @@
 const gitManager = require('./gitManager');
 const { properCase } = require('./templateManager');
-const { map, reduce } = require('@laufire/utils/collection');
+const { map, reduce, keys } = require('@laufire/utils/collection');
 const { existsSync } = require('fs');
 const shell = require('shelljs');
 const { isIterable } = require('@laufire/utils/reflection');
@@ -24,7 +24,7 @@ const normalizeChild = (components) =>
 
 const reduceChild = (components, parentKey = '') => reduce(
 	components, (acc, component) => {
-		const { name, props, content } = component;
+		const { name, props, content, type } = component;
 		const iterable = isIterable(content);
 
 		const childComponents = iterable && reduceChild(content, `${ parentKey }/${ name }`);
@@ -34,6 +34,7 @@ const reduceChild = (components, parentKey = '') => reduce(
 			[name]: {
 				name: name,
 				props: props,
+				type: type,
 				children: {
 					type: iterable ? 'component' : 'text',
 					content: content,
@@ -62,7 +63,7 @@ const repoManager = {
 		return { ...context, config, details, targetPath };
 	},
 
-	buildContext: (context) => ({ ...context, lib: { map, properCase }}),
+	buildContext: (context) => ({ ...context, lib: { map, properCase, keys }}),
 
 	processTemplate: async (context) => {
 		const { config: { template }} = context;
