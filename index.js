@@ -12,9 +12,9 @@ const render = async (initial) => {
 	const normalized = normalizeContent(context);
 	const built = buildContent(normalized);
 
-	await processTemplate(built);
+	const processed = await processTemplate(built);
 
-	await processCode(built);
+	await processCode(processed);
 };
 
 render({});

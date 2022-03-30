@@ -24,7 +24,7 @@ const normalizeChild = (components) =>
 
 const reduceChild = (components, parentKey = '') => reduce(
 	components, (acc, component) => {
-		const { name, props, content, type } = component;
+		const { name, content } = component;
 		const iterable = isIterable(content);
 
 		const childComponents = iterable && reduceChild(content, `${ parentKey }/${ name }`);
@@ -32,9 +32,7 @@ const reduceChild = (components, parentKey = '') => reduce(
 		return {
 			...acc,
 			[name]: {
-				name: name,
-				props: props,
-				type: type,
+				...component,
 				children: {
 					type: iterable ? 'component' : 'text',
 					content: content,
@@ -69,7 +67,7 @@ const repoManager = {
 		const { config: { template }} = context;
 		const init = require(`${ toBaseRelative }templates/${ template }/index`);
 
-		await init(context);
+		return await init(context);
 	},
 
 	ensureTarget: async (context) => {

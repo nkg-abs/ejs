@@ -1,7 +1,7 @@
+/* eslint-disable no-return-await */
 const { renderFile } = require('ejs');
-const shell = require('shelljs');
 const collection = require('@laufire/utils/collection');
-const { writeFileSync, existsSync } = require('fs');
+const { writeFileSync } = require('fs');
 
 const { map, reduce, values } = collection;
 
@@ -11,40 +11,41 @@ const compile = async (inputFile, data) => await renderFile(inputFile, data);
 
 const properCase = (name) => `${ name.slice(0, 1).toUpperCase() }${ name.slice(1) }`;
 
-const prepareStructure = ({ directories, output }) =>
-	reduce(
-		directories, (acc, dir) => {
-			const currentPath = `${ acc }/${ dir }`;
-			const createComponent = () => {
-				shell.mkdir(currentPath);
-				write(`${ currentPath }/index.js`, output);
-			};
-
-			existsSync(currentPath) || createComponent();
-
-			return currentPath;
-		}, '.',
-	);
-
-const processTemplate = async (context) => {
+const processConfig = async (context) => {
 	const { config: { template, content: components }, lib } = context;
-
-	const results = map(components, async (data) => {
-		const { outputPath } = data;
+	const results = map(components, async (config) => {
+		const { outputPath } = config;
 		const output = await compile(`templates/${ template }/component.ejs`,
-		{ ...data, ...lib });
+			{ ...config, ...lib });
 
-		return { path: outputPath, output };
+		return { path: outputPath, output: output };
 	});
 
-	const config = await Promise.all(values(results));
-	const { results: resolved } = reduce(components, (acc, value, name) => {
-		const { results, components: [component], components } = acc;
-
-		return { results: { ...results, [name]: component }, components: components.slice(1)}
-	}, { results: {}, components: config });
-
-	context.config.content = resolved;
+	return await Promise.all(values(results));
 };
 
-module.exports = { properCase, processTemplate, prepareStructure, write };
+const processComponents = (source, config) => reduce(
+	source, (
+		acc, dummy, name,
+	) => {
+		const { results, components: [component], components } = acc;
+
+		return {
+			results: {
+				...results,
+				[name]: component,
+			},
+			components: components.slice(1),
+		};
+	}, { results: {}, components: config },
+);
+
+const processTemplate = async (context) => {
+	const { config: { content: components }, config } = context;
+	const resolved = await processConfig(context);
+	const { results } = processComponents(components, resolved);
+
+	return { ...context, config: { ...config, content: results }};
+};
+
+module.exports = { properCase, processTemplate, write };
