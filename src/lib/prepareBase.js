@@ -1,4 +1,3 @@
-const gitManager = require('./gitManager');
 const { ensureTarget, resetTarget } = require('./repoManager');
 
 const prepareBase = async (context) => {
