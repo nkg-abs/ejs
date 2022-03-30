@@ -2,7 +2,7 @@ const {
 	read, processTemplate, buildContext, normalizeContent,
 	buildContent,
 } = require('./src/lib/repoManager');
-const { processCode } = require('./src/lib/saveCode');
+const saveCode = require('./src/lib/saveCode');
 
 const render = async (initial) => {
 	const context = await read({
@@ -14,7 +14,7 @@ const render = async (initial) => {
 
 	const processed = await processTemplate(built);
 
-	await processCode(processed);
+	await saveCode(processed);
 };
 
 render({});
