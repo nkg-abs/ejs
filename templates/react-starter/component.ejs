@@ -1,23 +1,23 @@
 import { React } from 'react';
-<%_ if(children.type === 'component'){ _%>
-<%_ map(children.content, ({ name }) => { _%>
+<%_ if(isIterable(content)){ _%>
+<%_ map(content, ({ name }) => { _%>
 import <%= properCase(name) %> from './<%= name %>';
 <%_ }); _%>
 <%_ } _%>
 
 const <%= properCase(name) %> = () =>
-	<%_ if(children.type === 'text'){ _%>
-	<<%= type %>{ ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }><%= children.content %></<%= type %>>;
+	<%_ if(!isIterable(content)){ _%>
+	<<%= type %>{ ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }><%= content %></<%= type %>>;
 	<%_ } else { _%>
-	<%_ if(keys(children.content).length === 1){ _%>
+	<%_ if(keys(content).length === 1){ _%>
 	<<%= type %> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }>
-	<%_ map(children.content, ({ name }) => { _%>
+	<%_ map(content, ({ name }) => { _%>
 		<<%= properCase(name) %>/>
 	<%_ }); _%>
 	</<%= type %>>;
 	<%_ } else { _%>
 	<div { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }>
-	<%_ map(children.content, ({ name }) => { _%>
+	<%_ map(content, ({ name }) => { _%>
 		<<%= properCase(name) %>/>
 	<%_ }); _%>
 	</div>;

@@ -33,10 +33,9 @@ const reduceChild = (components, parentKey = '') => reduce(
 			...acc,
 			[name]: {
 				...component,
-				children: {
-					type: iterable ? 'component' : 'text',
-					content: content,
-				},
+				template: 'component.ejs',
+				fileName: 'index.js',
+				content: content,
 				outputPath: `./${ parentKey }/${ name }/index.js`,
 			},
 			...childComponents,
@@ -61,7 +60,7 @@ const repoManager = {
 		return { ...context, config, details, targetPath };
 	},
 
-	buildContext: (context) => ({ ...context, lib: { map, properCase, keys }}),
+	buildContext: (context) => ({ ...context, lib: { map, properCase, keys, isIterable }}),
 
 	processTemplate: async (context) => {
 		const { config: { template }} = context;
