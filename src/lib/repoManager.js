@@ -28,19 +28,27 @@ const reduceChild = (components, parentKey = '') => reduce(
 		const iterable = isIterable(content);
 
 		const childComponents = iterable && reduceChild(content, `${ parentKey }/${ name }`);
+		const data = {
+			...component,
+			content: content,
+			outputPath: `./${ parentKey }/${ name }`,
+		};
 
-		return {
+		return [
 			...acc,
-			[name]: {
-				...component,
+			{
+				...data,
 				template: 'component.ejs',
 				fileName: 'index.js',
-				content: content,
-				outputPath: `./${ parentKey }/${ name }/index.js`,
 			},
-			...childComponents,
-		};
-	}, {},
+			{
+				...data,
+				template: 'test.ejs',
+				fileName: 'index.test.js',
+			},
+			...childComponents || [],
+		];
+	}, [],
 );
 
 const repoManager = {
