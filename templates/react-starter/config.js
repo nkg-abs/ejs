@@ -1,5 +1,5 @@
 const config = {
-	source: 'git@github.com:Laufire/react-starter.git'
+	source: 'git@github.com:nkg-laufire/react-starter.git',
 };
 
 module.exports = config;

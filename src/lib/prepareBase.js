@@ -1,4 +1,4 @@
-const { ensureTarget, resetTarget } = require('./repoManager');
+const { ensureTarget } = require('./repoManager');
 
 const prepareBase = async (context) => {
 	const { targetPath } = context;
@@ -7,8 +7,6 @@ const prepareBase = async (context) => {
 		...context,
 		localPath: targetPath,
 	});
-
-	resetTarget(context);
 };
 
 module.exports = prepareBase;
