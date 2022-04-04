@@ -7,16 +7,16 @@ import <%= properCase(name) %> from './<%= name %>';
 
 const <%= properCase(name) %> = () =>
 	<%_ if(!isIterable(content)){ _%>
-	<<%= type %>{ ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }><%= content %></<%= type %>>;
+	<<%= type %> <%_ if(keys(props) >= 1){ _%> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} } <%_ } _%> ><%= content %></<%= type %>>;
 	<%_ } else { _%>
 	<%_ if(keys(content).length === 1){ _%>
-	<<%= type %> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }>
+	<<%= type %> <%_ if(keys(props) >= 1){ _%> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} } <%_ } _%>>
 	<%_ map(content, ({ name }) => { _%>
 		<<%= properCase(name) %>/>
 	<%_ }); _%>
 	</<%= type %>>;
 	<%_ } else { _%>
-	<div { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} }>
+	<div <%_ if(keys(props) >= 1){ _%> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} } <%_ } _%>>
 	<%_ map(content, ({ name }) => { _%>
 		<<%= properCase(name) %>/>
 	<%_ }); _%>
