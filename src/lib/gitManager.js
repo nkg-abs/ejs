@@ -4,16 +4,14 @@ const gitManager = (localPath) => {
 	const git = simpleGit(localPath);
 
 	return {
-		clone: async ({ source, localPath: path }) =>
-			await git.clone(source, path),
-		setRemote: async (commands) =>
-			await git.remote(commands),
-		add: async (files) => await git.add(files),
-		commit: async (message) => await git.commit(message),
-		log: async (commands = []) => await git.log(...commands),
-		setConfig: async (config) => await git.addConfig(...config),
-		init: async () => await git.init(),
-		pull: async (commands) => await git.pull(...commands),
+		clone: ({ source, localPath: path }) => git.clone(source, path),
+		setRemote: (commands) => git.remote(commands),
+		add: (files) => git.add(files),
+		commit: (message) => git.commit(message),
+		log: (commands = []) => git.log(...commands),
+		setConfig: (config) => git.addConfig(...config),
+		init: () => git.init(),
+		pull: (commands) => git.pull(...commands),
 	};
 };
 
