@@ -6,8 +6,7 @@ const { processTemplate } = templateManager;
 const init = async (context) => {
 	await prepareBase({ ...context, source });
 
-	// eslint-disable-next-line no-return-await
-	return await processTemplate(context);
+	return processTemplate(context);
 };
 
 module.exports = init;

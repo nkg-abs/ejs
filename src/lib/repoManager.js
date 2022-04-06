@@ -1,9 +1,9 @@
+const shell = require('shelljs');
+const { existsSync } = require('fs');
+const { isIterable } = require('@laufire/utils/reflection');
+const { map, reduce, keys } = require('@laufire/utils/collection');
 const gitManager = require('./gitManager');
 const { properCase } = require('./templateManager');
-const { map, reduce, keys } = require('@laufire/utils/collection');
-const { existsSync } = require('fs');
-const shell = require('shelljs');
-const { isIterable } = require('@laufire/utils/reflection');
 
 const toBaseRelative = '../../';
 
@@ -22,34 +22,53 @@ const normalizeChild = (components) =>
 		};
 	});
 
-const reduceChild = (components, parentKey = '') => reduce(
-	components, (acc, component) => {
-		const { name, content } = component;
-		const iterable = isIterable(content);
+const getChildComponents = (context) => {
+	const { data: { content }} = context;
 
-		const childComponents = iterable && reduceChild(content, `${ parentKey }/${ name }`);
-		const data = {
-			...component,
-			content: content,
-			outputPath: `./${ parentKey }/${ name }`,
-		};
+	return isIterable(content)
+		// eslint-disable-next-line no-use-before-define
+		? getContent(context)
+		: [];
+};
+
+const getFiles = ({ data: { config, config: { content }, files, parentKey }}) =>
+	map(files, (file) => ({
+		content: content,
+		...file,
+		...config,
+		outputPath: parentKey,
+	}));
+
+const genReducer = (context) => {
+	const { data: { parentKey }} = context;
+
+	return (acc, component) => {
+		const { name, content } = component;
 
 		return [
 			...acc,
-			{
-				...data,
-				template: 'component.ejs',
-				fileName: 'index.js',
-			},
-			{
-				...data,
-				template: 'test.ejs',
-				fileName: 'index.test.js',
-			},
-			...childComponents || [],
+			...getFiles({
+				...context,
+				data: { files: [
+					{ template: 'component.ejs', fileName: 'index.js' },
+					{	template: 'test.ejs',	fileName: 'index.test.js'	},
+				], config: component, parentKey: `${ parentKey }/${ name }` },
+			}),
+			...getChildComponents({
+				...context,
+				data: { content: content, parentKey: `${ parentKey }/${ name }` },
+			}),
 		];
-	}, [],
-);
+	};
+};
+
+const getContent = (context) => {
+	const { data: { content: components }} = context;
+
+	return reduce(
+		components, genReducer(context), [],
+	);
+};
 
 const repoManager = {
 	read: async (context) => {
@@ -68,13 +87,16 @@ const repoManager = {
 		return { ...context, config, details, targetPath };
 	},
 
-	buildContext: (context) => ({ ...context, lib: { map, properCase, keys, isIterable }}),
+	buildContext: (context) => ({
+		...context,
+		lib: { map, properCase, keys, isIterable },
+	}),
 
-	processTemplate: async (context) => {
+	processTemplate: (context) => {
 		const { config: { template }} = context;
 		const init = require(`${ toBaseRelative }templates/${ template }/index`);
 
-		return await init(context);
+		return init(context);
 	},
 
 	ensureTarget: async (context) => {
@@ -107,13 +129,13 @@ const repoManager = {
 	},
 
 	buildContent: (context) => {
-		const { config: { content }, config, targetPath } = context;
+		const { config: { content }, config, targetPath: parentKey } = context;
 
 		return {
 			...context,
 			config: {
 				...config,
-				content: reduceChild(content, `${ targetPath }/src`),
+				content: getContent({ ...context, data: { content: content, parentKey: `${ parentKey }/src` }}),
 			},
 		};
 	},
