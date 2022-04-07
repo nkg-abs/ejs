@@ -1,4 +1,4 @@
-const gitManager = require('../gitManager');
+const gitManager = require('../src/lib/gitManager');
 
 const commitCode = async (context) => {
 	const { details: { email, name, message }} = context;
