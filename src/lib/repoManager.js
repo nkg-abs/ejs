@@ -2,17 +2,7 @@ const shell = require('shelljs');
 const { existsSync } = require('fs');
 const gitManager = require('./gitManager');
 
-const toBaseRelative = '../../';
-
 const repoManager = {
-
-	processTemplate: (context) => {
-		const { config: { template }} = context;
-		const init = require(`${ toBaseRelative }templates/${ template }/index`);
-
-		return init(context);
-	},
-
 	ensureTarget: async (context) => {
 		const { targetPath } = context;
 		const createBase = async ({ source }) => {
@@ -29,7 +19,6 @@ const repoManager = {
 	},
 
 	resetTarget: ({ targetPath }) => shell.exec(`sh ./${ targetPath }/reset.sh`),
-
 };
 
 module.exports = repoManager;
