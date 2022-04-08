@@ -1,8 +1,11 @@
+const { renderTemplates } = require('../src/lib/templateManager');
+const getTemplates = require('../templates/react-starter');
+
 const processTemplate = (context) => {
 	const { config: { template }} = context;
-	const init = require(`../templates/${ template }/index`);
+	const { source } = require(`../templates/${ template }/config`);
 
-	return init(context);
+	return renderTemplates({ ...getTemplates(context), source });
 };
 
 module.exports = processTemplate;

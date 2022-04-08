@@ -1,12 +1,17 @@
-const { source } = require('./config');
-const templateManager = require('../../src/lib/templateManager');
-const prepareBase = require('../../src/lib/prepareBase');
-const { processTemplate } = templateManager;
+const { reduce } = require('@laufire/utils/collection');
 
-const init = async (context) => {
-	await prepareBase({ ...context, source });
+const getTemplates = (context) => {
+	const { config: { content: files }, config } = context;
 
-	return processTemplate(context);
+	const content = reduce(
+		files, (acc, file) => [
+			...acc,
+			{ ...file, template: 'component.ejs', fileName: 'index.js' },
+			{ ...file, template: 'test.ejs',	fileName: 'index.test.js' },
+		], [],
+	);
+
+	return { ...context, config: { ...config, content }};
 };
 
-module.exports = init;
+module.exports = getTemplates;

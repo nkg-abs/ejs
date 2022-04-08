@@ -1,4 +1,4 @@
-const { map, reduce } = require('@laufire/utils/collection');
+const { reduce } = require('@laufire/utils/collection');
 const { isIterable } = require('@laufire/utils/reflection');
 
 const getChildComponents = (context) => {
@@ -10,14 +10,6 @@ const getChildComponents = (context) => {
 		: [];
 };
 
-const getFiles = ({ data: { config, config: { content }, files, parentKey }}) =>
-	map(files, (file) => ({
-		content: content,
-		...file,
-		...config,
-		outputPath: parentKey,
-	}));
-
 const genReducer = (context) => {
 	const { data: { parentKey }} = context;
 
@@ -26,13 +18,10 @@ const genReducer = (context) => {
 
 		return [
 			...acc,
-			...getFiles({
-				...context,
-				data: { files: [
-					{ template: 'component.ejs', fileName: 'index.js' },
-					{	template: 'test.ejs',	fileName: 'index.test.js'	},
-				], config: component, parentKey: `${ parentKey }/${ name }` },
-			}),
+			{
+				...component,
+				outputPath: `./${ parentKey }/${ name }`,
+			},
 			...getChildComponents({
 				...context,
 				data: { content: content, parentKey: `${ parentKey }/${ name }` },
