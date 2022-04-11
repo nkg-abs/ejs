@@ -9,6 +9,8 @@ const commitCode = async (context) => {
 	await setConfig(['user.name', name]);
 	await add(['.']);
 	await commit(message);
+
+	return context;
 };
 
 module.exports = commitCode;

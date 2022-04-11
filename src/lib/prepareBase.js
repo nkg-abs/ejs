@@ -14,6 +14,8 @@ const prepareBase = async (context) => {
 	};
 
 	existsSync(targetPath) || await createBase(context);
+
+	return context;
 };
 
 module.exports = prepareBase;
