@@ -1,8 +1,9 @@
 
 const { map, keys } = require('@laufire/utils/collection');
-const { isIterable } = require('@laufire/utils/reflection');
 const asyncReduce = require('../src/lib/helpers');
-const { properCase } = require('../src/lib/templateManager');
+const {
+	properCase, hasChildren, usesContext,
+} = require('../src/lib/templateManager');
 const normalizeContent = require('./normalizeContent');
 const buildContent = require('./buildContent');
 const read = require('./read');
@@ -10,7 +11,7 @@ const read = require('./read');
 const buildContext = (context) => ({
 	...context,
 	localPath: 'dist/source',
-	lib: { map, properCase, keys, isIterable },
+	lib: { map, properCase, keys, hasChildren, usesContext },
 });
 
 const readSource = (context) => asyncReduce([

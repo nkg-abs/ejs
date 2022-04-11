@@ -1,24 +1,24 @@
 import { React } from 'react';
-<%_ if(isIterable(content)){ _%>
+<%_ if(hasChildren(content)){ _%>
 <%_ map(content, ({ name }) => { _%>
 import <%= properCase(name) %> from './<%= name %>';
 <%_ }); _%>
 <%_ } _%>
 
-const <%= properCase(name) %> = () =>
-	<%_ if(!isIterable(content)){ _%>
+const <%= properCase(name) %> = (<%_ if(hasChildren(content) && usesContext(content)){ _%> context <%_ } _%>) =>
+	<%_ if(!hasChildren(content)){ _%>
 	<<%= type %> <%_ if(keys(props) >= 1){ _%> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} } <%_ } _%> ><%= content %></<%= type %>>;
 	<%_ } else { _%>
 	<%_ if(keys(content).length === 1){ _%>
 	<<%= type %> <%_ if(keys(props) >= 1){ _%> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} } <%_ } _%>>
 	<%_ map(content, ({ name }) => { _%>
-		<<%= properCase(name) %>/>
+		<<%= properCase(name) %> { ...context }/>
 	<%_ }); _%>
 	</<%= type %>>;
 	<%_ } else { _%>
 	<div <%_ if(keys(props) >= 1){ _%> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} } <%_ } _%>>
 	<%_ map(content, ({ name }) => { _%>
-		<<%= properCase(name) %>/>
+		<<%= properCase(name) %> { ...context }/>
 	<%_ }); _%>
 	</div>;
 	<%_ } _%>

@@ -1,12 +1,17 @@
 const { renderFile } = require('ejs');
 const { map } = require('@laufire/utils/collection');
 const { writeFileSync } = require('fs');
+const { isIterable } = require('@laufire/utils/reflection');
 
 const write = (outputFile, output) => writeFileSync(outputFile, output);
 
 const compile = (inputFile, data) => renderFile(inputFile, data);
 
 const properCase = (name) => `${ name.slice(0, 1).toUpperCase() }${ name.slice(1) }`;
+
+const hasChildren = (content) => isIterable(content);
+
+const usesContext = hasChildren;
 
 const renderTemplates = async (context) => {
 	const { config: { template, content: children }, lib, config } = context;
@@ -31,4 +36,10 @@ const renderTemplates = async (context) => {
 	};
 };
 
-module.exports = { properCase, renderTemplates, write };
+module.exports = {
+	properCase,
+	renderTemplates,
+	write,
+	usesContext,
+	hasChildren,
+};
