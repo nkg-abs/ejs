@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-<%_ if(hasChildren(content)){ _%>
+<%_ if(childCount){ _%>
 <%_ map(content, ({ name }) => { _%>
 jest.mock('./<%= name %>', () => () => <div role="<%= name %>"/>);
 <%_ }); _%>
@@ -16,7 +16,7 @@ describe('<%= properCase(name) %>', () => {
 		} = component;
 
 		expect(rootElement).toBeInTheDocument();
-		<%_ if(hasChildren(content)){ _%>
+		<%_ if(childCount){ _%>
 		<%_ map(content, ({ name }) => { _%>
 		expect(component.getByRole('<%= name %>')).toBeInTheDocument();
 		<%_ }); _%>
