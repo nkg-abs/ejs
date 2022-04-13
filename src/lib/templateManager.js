@@ -1,7 +1,6 @@
 const { renderFile } = require('ejs');
-const { map, reduce, keys } = require('@laufire/utils/collection');
+const { map } = require('@laufire/utils/collection');
 const { writeFileSync } = require('fs');
-const { isIterable } = require('@laufire/utils/reflection');
 
 const write = (outputFile, output) => writeFileSync(outputFile, output);
 
@@ -9,36 +8,12 @@ const compile = (inputFile, data) => renderFile(inputFile, data);
 
 const properCase = (name) => `${ name.slice(0, 1).toUpperCase() }${ name.slice(1) }`;
 
-const iterableCount = (iterable) => keys(iterable).length;
-
-const getData = ({ data: { child: { content, props }}}) => {
-	const childCount = isIterable(content) ? iterableCount(content) : 0;
-	const imports = isIterable(content)
-		? reduce(
-			content, (acc, { name }) => [
-				...acc,
-				{
-					modulePath: `./${ name }`,
-					name: properCase(name),
-				},
-			], [],
-		)
-		: [];
-
-	return {
-		childCount: childCount,
-		propCount: iterableCount(props),
-		usesContext: Boolean(childCount),
-		imports: imports,
-	};
-};
-
 const renderTemplates = async (context) => {
 	const { config: { template, content: children }, lib, config } = context;
 	const content = await Promise.all(map(children, async (child) => {
-		const { outputPath, template: file, fileName } = child;
+		const { outputPath, template: file, fileName, data } = child;
 		const output = await compile(`templates/${ template }/${ file }`,
-			{ ...child, ...lib, ...getData({ ...context, data: { child }}) });
+			{ ...child, ...lib, ...data });
 
 		return {
 			path: outputPath,
