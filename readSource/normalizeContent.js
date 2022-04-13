@@ -3,7 +3,7 @@ const { map } = require('@laufire/utils/collection');
 
 const normalizeChild = (components) =>
 	map(components, (component, key) => {
-		const { content } = component;
+		const { content, props } = component;
 
 		const childContent = isIterable(content)
 			? normalizeChild(content)
@@ -11,6 +11,8 @@ const normalizeChild = (components) =>
 
 		return {
 			name: key,
+			props: props || {},
+			type: 'div',
 			...component,
 			content: childContent,
 		};
