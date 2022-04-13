@@ -3,7 +3,7 @@ import { React } from 'react';
 import <%= name %> from '<%= modulePath %>';
 <%_ }); _%>
 
-const <%= properCase(name) %> = (<%_ if(usesContext){ _%> context <%_ } _%>) =>
+const <%= componentName %> = (<%_ if(usesContext){ _%> context <%_ } _%>) =>
 	<<%= type %> <%_ if(propCount){%> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} } <%_ } _%>>
 	<%_ if(childCount){ _%>
 	<%_ map(content, ({ name }) => { _%>
@@ -14,4 +14,4 @@ const <%= properCase(name) %> = (<%_ if(usesContext){ _%> context <%_ } _%>) =>
 	<%_ } _%>
 	</<%= type %>>;
 
-export default <%= properCase(name) %>;
+export default <%= componentName %>;
