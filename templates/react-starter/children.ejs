@@ -1,0 +1,7 @@
+<%_ if(childCount){ _%>
+<%_ map(content, ({ name }) => { _%>
+	<<%= properCase(name) %> { ...context }/>
+<%_ }); _%>
+<%_ } else { _%>
+	<%= content %>
+<%_ } _%>
