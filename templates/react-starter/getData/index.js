@@ -16,9 +16,7 @@ const getImports = (content) => reduce(
 
 const getData = ({ data: { child: { content, props, name }}}) => {
 	const childCount = isIterable(content) ? iterableCount(content) : 0;
-	const imports = isIterable(content)
-		? getImports(content)
-		: [];
+	const imports = childCount ? getImports(content) : [];
 
 	return {
 		childCount: childCount,
