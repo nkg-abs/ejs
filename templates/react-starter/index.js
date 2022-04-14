@@ -16,12 +16,12 @@ const getTemplates = (context) => {
 				...acc,
 				{
 					...data,
-					template: 'component.ejs',
+					template: 'component/index.ejs',
 					fileName: 'index.js',
 				},
 				{
 					...data,
-					template: 'test.ejs',
+					template: 'test/index.ejs',
 					fileName: 'index.test.js',
 				},
 			];
