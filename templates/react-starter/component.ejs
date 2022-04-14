@@ -1,9 +1,9 @@
 import { React } from 'react';
-<%- include('imports'); _%>
+<%- include('partials/imports'); _%>
 
 const <%= componentName %> = (<%_ if(usesContext){ _%> context <%_ } _%>) =>
-	<<%= type %><%- include('props'); _%>>
-		<%- include('children'); %>
+	<<%= type %><%- include('partials/props'); _%>>
+		<%- include('partials/children'); _%>
 	</<%= type %>>;
 
 export default <%= componentName %>;
