@@ -1,16 +1,11 @@
 /* eslint-disable react/display-name */
-<%_ if(childCount){ _%>
-<%_ map(content, ({ name }) => { _%>
-jest.mock('./<%= name %>', () => () => <div role="<%= name %>"/>);
-<%_ }); _%>
-import React from 'react';
-<%_ } _%>
+<%- include('../partials/mocks') %>
 import { render } from '@testing-library/react';
-import <%= properCase(name) %> from '.';
+import <%= componentName %> from '.';
 
-describe('<%= properCase(name) %>', () => {
+describe('<%= componentName %>', () => {
 	test('renders the component appropriately', () => {
-		const component = render(<%= properCase(name) %>());
+		const component = render(<%= componentName %>());
 		const {
 			container: { children: [rootElement] },
 		} = component;

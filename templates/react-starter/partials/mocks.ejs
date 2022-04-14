@@ -1,0 +1,6 @@
+<%_ if(childCount){ _%>
+<%_ map(content, ({ name }) => { _%>
+jest.mock('./<%= name %>', () => () => <div role="<%= name %>"/>);
+<%_ }); _%>
+import React from 'react';
+<%_ } _%>
