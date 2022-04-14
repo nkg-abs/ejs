@@ -1,7 +1,5 @@
 import { React } from 'react';
-<%_ map(imports, ({ modulePath, name }) => { _%>
-import <%= name %> from '<%= modulePath %>';
-<%_ }); _%>
+<%- include('imports'); _%>
 
 const <%= componentName %> = (<%_ if(usesContext){ _%> context <%_ } _%>) =>
 	<<%= type %> <%_ if(propCount){%> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} } <%_ } _%>>
@@ -10,7 +8,7 @@ const <%= componentName %> = (<%_ if(usesContext){ _%> context <%_ } _%>) =>
 		<<%= properCase(name) %> { ...context }/>
 	<%_ }); _%>
 	<%_ } else { _%>
-	<%= content %>
+		<%= content %>
 	<%_ } _%>
 	</<%= type %>>;
 
