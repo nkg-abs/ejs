@@ -2,7 +2,7 @@ import { React } from 'react';
 <%- include('imports'); _%>
 
 const <%= componentName %> = (<%_ if(usesContext){ _%> context <%_ } _%>) =>
-	<<%= type %> <%_ if(propCount){%> { ...{ <% map(props, (value, name) => { %><%= name %>: '<%= value %>' <% }); %>} } <%_ } _%>>
+	<<%= type %><%- include('props'); _%>>
 	<%_ if(childCount){ _%>
 	<%_ map(content, ({ name }) => { _%>
 		<<%= properCase(name) %> { ...context }/>
