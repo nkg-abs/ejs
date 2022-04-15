@@ -1,31 +1,35 @@
 const { reduce } = require('@laufire/utils/collection');
 const getData = require('./getData');
 
-// eslint-disable-next-line max-lines-per-function
+const getFiles = (context) => {
+	const { data: { file }} = context;
+	const fileData = {
+		...file,
+		data: { ...getData({ ...context, data: { child: file }}) },
+	};
+
+	return [
+		{
+			...fileData,
+			template: 'component/index.ejs',
+			fileName: 'index.js',
+		},
+		{
+			...fileData,
+			template: 'test/index.ejs',
+			fileName: 'index.test.js',
+		},
+	];
+};
+
 const getTemplates = (context) => {
 	const { config: { content: files }, config } = context;
 
 	const content = reduce(
-		files, (acc, file) => {
-			const data = {
-				...file,
-				data: { ...getData({ ...context, data: { child: file }}) },
-			};
-
-			return [
-				...acc,
-				{
-					...data,
-					template: 'component/index.ejs',
-					fileName: 'index.js',
-				},
-				{
-					...data,
-					template: 'test/index.ejs',
-					fileName: 'index.test.js',
-				},
-			];
-		}, [],
+		files, (acc, file) => [
+			...acc,
+			...getFiles({ ...context, data: { file }}),
+		], [],
 	);
 
 	return { ...context, config: { ...config, content }};
