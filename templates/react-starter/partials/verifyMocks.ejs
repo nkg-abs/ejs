@@ -1,0 +1,5 @@
+<%_ if(childCount){ _%>
+	<%_ map(content, ({ name }) => { _%>
+	expect(component.getByRole('<%= name %>')).toBeInTheDocument();
+	<%_ }); _%>
+<%_ } _%>

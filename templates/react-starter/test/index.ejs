@@ -11,10 +11,6 @@ describe('<%= componentName %>', () => {
 		} = component;
 
 		expect(rootElement).toBeInTheDocument();
-		<%_ if(childCount){ _%>
-		<%_ map(content, ({ name }) => { _%>
-		expect(component.getByRole('<%= name %>')).toBeInTheDocument();
-		<%_ }); _%>
-		<%_ } _%>
+		<%- include('../partials/verifyMocks') %>
 	});
 });
