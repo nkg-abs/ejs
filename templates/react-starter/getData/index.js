@@ -4,26 +4,46 @@ const { properCase } = require('../../../src/lib/templateManager');
 
 const iterableCount = (iterable) => keys(iterable).length;
 
-const getImports = (content) => reduce(
-	content, (acc, { name }) => [
-		...acc,
-		{
-			modulePath: `./${ name }`,
-			name: properCase(name),
-		},
-	], [],
-);
+// eslint-disable-next-line max-lines-per-function
+const getImports = (context) => {
+	const { config: { theme }, modules } = context;
+	const { data: { child: { content, type }}} = context;
+	const typeExists = modules[theme].imports[type];
 
-const getData = ({ data: { child: { content, props, name }}}) => {
+	const childrenComponents = isIterable(content)
+		? reduce(
+			content, (acc, { name }) => [
+				...acc,
+				{
+					modulePath: `./${ name }`,
+					name: properCase(name),
+				},
+			], [],
+		)
+		: [];
+	const importedComponents = typeExists
+		? [{
+			modulePath: typeExists,
+			name: properCase(type),
+		}]
+		: [];
+
+	return [...childrenComponents, ...importedComponents];
+};
+
+const getData = (context) => {
+	const { data: { child }, config: { theme }, modules } = context;
+	const { content, props, name, type } = child;
 	const childCount = isIterable(content) ? iterableCount(content) : 0;
-	const imports = childCount ? getImports(content) : [];
+	const imports = getImports(context);
 
 	return {
 		childCount: childCount,
+		imports: imports,
 		propCount: iterableCount(props),
 		usesContext: Boolean(childCount),
-		imports: imports,
 		componentName: properCase(name),
+		type: modules[theme].imports[type] ? properCase(type) : type,
 	};
 };
 
