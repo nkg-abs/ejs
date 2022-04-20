@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 const { reduce, keys, filter } = require('@laufire/utils/collection');
 const { isIterable } = require('@laufire/utils/reflection');
 const { properCase } = require('../../../src/lib/templateManager');
@@ -31,6 +32,7 @@ const getImports = (context) => {
 	return [...childrenComponents, ...importedComponents];
 };
 
+// eslint-disable-next-line max-lines-per-function
 const getData = (context) => {
 	const { data: { child }, config: { theme }, modules } = context;
 	const { content, props, name, type } = child;
@@ -44,10 +46,13 @@ const getData = (context) => {
 		usesContext: Boolean(childCount),
 		componentName: properCase(name),
 		type: modules[theme].imports[type] ? properCase(type) : type,
-		content: {
-			...filter(content, (config, childName) => childName !== name),
-			...content[name] && { [`${ name }Child`]: { ...content[name], name: `${ name }Child` }},
-		},
+		textContent: childCount ? '' : content,
+		children: childCount
+			? {
+				...filter(content, (config, childName) => childName !== name),
+				...content[name] && { [`${ name }Child`]: { ...content[name], name: `${ name }Child` }},
+			}
+			: {},
 	};
 };
 
