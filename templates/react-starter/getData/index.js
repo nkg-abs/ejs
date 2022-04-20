@@ -1,4 +1,4 @@
-const { reduce, keys } = require('@laufire/utils/collection');
+const { reduce, keys, filter } = require('@laufire/utils/collection');
 const { isIterable } = require('@laufire/utils/reflection');
 const { properCase } = require('../../../src/lib/templateManager');
 
@@ -7,16 +7,16 @@ const iterableCount = (iterable) => keys(iterable).length;
 // eslint-disable-next-line max-lines-per-function
 const getImports = (context) => {
 	const { config: { theme }, modules } = context;
-	const { data: { child: { content, type }}} = context;
+	const { data: { child: { name, content, type }}} = context;
 	const typeExists = modules[theme].imports[type];
 
 	const childrenComponents = isIterable(content)
 		? reduce(
-			content, (acc, { name }) => [
+			content, (acc, { name: childName }) => [
 				...acc,
 				{
-					modulePath: `./${ name }`,
-					name: properCase(name),
+					modulePath: `./${ childName }`,
+					name: `${ properCase(childName === name ? `${ childName }Child` : childName) }`,
 				},
 			], [],
 		)
@@ -44,6 +44,10 @@ const getData = (context) => {
 		usesContext: Boolean(childCount),
 		componentName: properCase(name),
 		type: modules[theme].imports[type] ? properCase(type) : type,
+		content: {
+			...filter(content, (config, childName) => childName !== name),
+			...content[name] && { [`${ name }Child`]: { ...content[name], name: `${ name }Child` }},
+		},
 	};
 };
 
