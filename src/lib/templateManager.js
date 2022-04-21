@@ -8,6 +8,7 @@ const compile = (inputFile, data) => renderFile(inputFile, data);
 
 const properCase = (name) => `${ name.slice(0, 1).toUpperCase() }${ name.slice(1) }`;
 
+// eslint-disable-next-line max-lines-per-function
 const renderTemplates = async (context) => {
 	const { config: { template, content: children }, lib, config } = context;
 	const content = await Promise.all(map(children, async (child) => {
@@ -19,6 +20,7 @@ const renderTemplates = async (context) => {
 			path: outputPath,
 			output: output,
 			fileName: fileName,
+			action: 'write',
 		};
 	}));
 

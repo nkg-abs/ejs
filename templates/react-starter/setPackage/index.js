@@ -28,6 +28,7 @@ const setDependencies = (context) => {
 	};
 };
 
+// eslint-disable-next-line max-lines-per-function
 const setPackage = (context) => {
 	const { modules, targetPath, config: { theme }} = context;
 	const packagePath = `./${ targetPath }/package.json`;
@@ -47,6 +48,7 @@ const setPackage = (context) => {
 				updated, null, indentation,
 			),
 			fileName: 'package.json',
+			action: 'write',
 		},
 	});
 };

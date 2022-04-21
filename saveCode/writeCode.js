@@ -4,10 +4,17 @@ const { write } = require('../src/lib/templateManager');
 
 const writeCode = (context) => {
 	const { config: { content }} = context;
+	const actions = {
+		write: ({ path, output, fileName }) => {
+			existsSync(path) || mkdirSync(path);
+			write(`${ path }/${ fileName }`, output);
+		},
+	};
 
-	map(content, ({ path, output, fileName }) => {
-		existsSync(path) || mkdirSync(path);
-		write(`${ path }/${ fileName }`, output);
+	map(content, (file) => {
+		const { action } = file;
+
+		actions[action](file);
 	});
 
 	return context;
