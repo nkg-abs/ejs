@@ -1,6 +1,6 @@
 const asyncReduce = require('../src/lib/helpers');
 const prepareBase = require('../src/lib/prepareBase');
-const { renderTemplates } = require('../src/lib/templateManager');
+const { renderTemplates, copyServices } = require('../src/lib/templateManager');
 
 const processTemplate = (context) => {
 	const { config: { template }} = context;
@@ -13,6 +13,7 @@ const processTemplate = (context) => {
 		getTemplates,
 		renderTemplates,
 		setPackage,
+		copyServices,
 	], { ...context, ...appConfig });
 };
 

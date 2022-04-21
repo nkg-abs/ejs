@@ -33,8 +33,28 @@ const renderTemplates = async (context) => {
 	};
 };
 
+const copyServices = (context) => {
+	const { targetPath, config, config: { content }} = context;
+
+	return {
+		...context,
+		config: {
+			...config,
+			content: [
+				...content,
+				{
+					src: 'services',
+					dest: `${ targetPath }/src/services`,
+					action: 'copy',
+				},
+			],
+		},
+	};
+};
+
 module.exports = {
 	properCase,
 	renderTemplates,
 	write,
+	copyServices,
 };
