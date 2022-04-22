@@ -1,6 +1,6 @@
 const { renderFile } = require('ejs');
 const { map } = require('@laufire/utils/collection');
-const { writeFileSync } = require('fs');
+const { writeFileSync, readdirSync } = require('fs');
 
 const write = (outputFile, output) => writeFileSync(outputFile, output);
 
@@ -52,9 +52,19 @@ const copyServices = (context) => {
 	};
 };
 
+const readServices = (context) => {
+	const services = readdirSync('services');
+
+	return {
+		...context,
+		services,
+	};
+};
+
 module.exports = {
 	properCase,
 	renderTemplates,
 	write,
 	copyServices,
+	readServices,
 };
