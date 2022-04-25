@@ -1,17 +1,24 @@
-/* eslint-disable complexity */
-const { reduce, keys, filter } = require('@laufire/utils/collection');
+const { reduce, keys, filter, map } = require('@laufire/utils/collection');
 const { isIterable } = require('@laufire/utils/reflection');
 const { properCase } = require('../../../src/lib/templateManager');
 
 const iterableCount = (iterable) => keys(iterable).length;
 
-// eslint-disable-next-line max-lines-per-function
-const getImports = (context) => {
-	const { config: { theme }, modules } = context;
-	const { data: { child: { name, content, type }}} = context;
-	const typeExists = modules[theme].imports[type];
+const getServiceImports = ({ data: { child: { props }}, services }) =>
+	reduce(
+		props, (acc, value) => [
+			...acc,
+			...services.includes(`${ value }.js`)
+				? [{
+					modulePath: `services/${ value }.js`,
+					name: value,
+				}]
+				: [],
+		], [],
+	);
 
-	const childrenComponents = isIterable(content)
+const getChildrenImports = ({ data: { child: { name, content }}}) =>
+	(isIterable(content)
 		? reduce(
 			content, (acc, { name: childName }) => [
 				...acc,
@@ -21,31 +28,33 @@ const getImports = (context) => {
 				},
 			], [],
 		)
-		: [];
-	const importedComponents = typeExists
+		: []);
+
+const getThemeImports = (context) => {
+	const { config: { theme }, modules } = context;
+	const { data: { child: { type }}} = context;
+
+	const typeExists = modules[theme].imports[type];
+
+	return typeExists
 		? [{
 			modulePath: typeExists,
 			name: properCase(type),
 		}]
 		: [];
-
-	return [...childrenComponents, ...importedComponents];
 };
 
-// eslint-disable-next-line max-lines-per-function
-const getData = (context) => {
-	const { data: { child }, config: { theme }, modules } = context;
-	const { content, props, name, type } = child;
-	const childCount = isIterable(content) ? iterableCount(content) : 0;
-	const imports = getImports(context);
+const getImports = (context) => [
+	...getChildrenImports(context),
+	...getThemeImports(context),
+	...getServiceImports(context),
+];
+
+const getContent = (context) => {
+	const { data: { child, childCount }} = context;
+	const { content, name } = child;
 
 	return {
-		childCount: childCount,
-		imports: imports,
-		propCount: iterableCount(props),
-		usesContext: Boolean(childCount),
-		componentName: properCase(name),
-		type: modules[theme].imports[type] ? properCase(type) : type,
 		textContent: childCount ? '' : content,
 		children: childCount
 			? {
@@ -53,6 +62,29 @@ const getData = (context) => {
 				...content[name] && { [`${ name }Child`]: { ...content[name], name: `${ name }Child` }},
 			}
 			: {},
+	};
+};
+
+const buildProps = ({ data: { child: { props }}, services }) =>
+	map(props, (value) => (services.includes(`${ value }.js`)
+		? `${ value }(context)`
+		: JSON.stringify(value)));
+
+const getData = (context) => {
+	const { data: { child }, config: { theme }} = context;
+	const { modules, data } = context;
+	const { content, props, name, type } = child;
+	const childCount = isIterable(content) ? iterableCount(content) : 0;
+
+	return {
+		childCount: childCount,
+		imports: getImports(context),
+		propCount: iterableCount(props),
+		usesContext: Boolean(childCount),
+		componentName: properCase(name),
+		type: modules[theme].imports[type] ? properCase(type) : type,
+		...getContent({ ...context, data: { ...data, childCount }}),
+		props: buildProps(context),
 	};
 };
 
