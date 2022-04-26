@@ -5,8 +5,8 @@ const config = {
 			version: '4.12.4',
 			name: '@material-ui/core',
 			imports: {
-				box: 'material-ui/core/Box',
-				button: 'material-ui/core/Button',
+				box: '@material-ui/core/Box',
+				button: '@material-ui/core/Button',
 			},
 		},
 		default: {},
