@@ -1,1 +1,6 @@
-<%_ if(propCount){%> { ...{ <% map(props, (value, name) => { %><%= name %>: <%- value %> <% }); %>} } <%_ } _%>
+<%_ if(propCount){%> {
+		...{
+			<%_ map(props, (value, name) => { %>
+			<%= name %>: <%- value %>, <% }); %>
+		}
+	} <%_ } _%>
