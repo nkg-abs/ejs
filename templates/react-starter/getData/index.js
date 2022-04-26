@@ -3,17 +3,18 @@ const {
 	map, find, length,
 } = require('@laufire/utils/collection');
 const { isIterable } = require('@laufire/utils/reflection');
-const { properCase } = require('../../../src/lib/templateManager');
+const { properCase, camelCase } = require('../../../src/lib/templateManager');
 const { parts } = require('@laufire/utils/path');
 
-const camelCase = (path) => {
-	const [first, ...rest] = parts(path).slice(1);
+const isService = (services, service) => services.includes(`${ service }.js`);
 
-	return `${ first }${ map(rest, properCase).join('') }`;
-};
+const isServiceExists = ({ data: { child: { props }}, services }) =>
+	find(props, (value) => isService(services, value));
 
-const findService = (computed, service) =>
-	find(computed, ({ name: serviceName }) => service === serviceName);
+const addSuffix = (componentName) => `${ componentName }Child`;
+
+const findService = (acc, service) =>
+	find(acc, ({ name: serviceName }) => service === serviceName);
 
 const getServiceImports = ({ data: { child: { props }}, services }) =>
 	reduce(
@@ -23,7 +24,7 @@ const getServiceImports = ({ data: { child: { props }}, services }) =>
 
 			return [
 				...acc,
-				...services.includes(`${ value }.js`)
+				...isService(services, value)
 					? [{
 						modulePath: `services/${ value }.js`,
 						name: findService(acc, name)
@@ -36,17 +37,15 @@ const getServiceImports = ({ data: { child: { props }}, services }) =>
 	);
 
 const getChildrenImports = ({ data: { child: { name, content }}}) =>
-	(isIterable(content)
-		? reduce(
-			content, (acc, { name: childName }) => [
-				...acc,
-				{
-					modulePath: `./${ childName }`,
-					name: `${ properCase(childName === name ? `${ childName }Child` : childName) }`,
-				},
-			], [],
-		)
-		: []);
+	isIterable(content) && reduce(
+		content, (acc, { name: childName }) => [
+			...acc,
+			{
+				modulePath: `./${ childName }`,
+				name: `${ properCase(childName === name ? addSuffix(childName) : childName) }`,
+			},
+		], [],
+	);
 
 const getThemeImports = (context) => {
 	const { config: { theme }, modules } = context;
@@ -54,19 +53,18 @@ const getThemeImports = (context) => {
 
 	const typeExists = modules[theme].imports[type];
 
-	return typeExists
-		? [{
-			modulePath: typeExists,
-			name: properCase(type),
-		}]
-		: [];
+	return typeExists && [{
+		modulePath: typeExists,
+		name: properCase(type),
+	}];
 };
 
-const getImports = (context) => [
-	...getChildrenImports(context),
-	...getThemeImports(context),
-	...getServiceImports(context),
-];
+const getImports = (context) =>
+	map([
+		getChildrenImports,
+		getThemeImports,
+		getServiceImports,
+	], (fn) => fn(context) || []).flat();
 
 const getContent = (context) => {
 	const { data: { child, childCount }} = context;
@@ -77,7 +75,12 @@ const getContent = (context) => {
 		children: childCount
 			? {
 				...filter(content, (config, childName) => childName !== name),
-				...content[name] && { [`${ name }Child`]: { ...content[name], name: `${ name }Child` }},
+				...content[name] && {
+					[addSuffix(name)]: {
+						...content[name],
+						name: addSuffix(name),
+					},
+				},
 			}
 			: {},
 	};
@@ -85,15 +88,13 @@ const getContent = (context) => {
 
 const buildProps = ({ data: { child: { props }}, services }) =>
 	map(props, (value) => {
-		const service = parts(value)[parts(value).length - 1];
+		const pathParts = parts(value);
+		const service = pathParts[pathParts.length - 1];
 
-		return services.includes(`${ value }.js`)
+		return isService(services, value)
 			? `${ camelCase(value) }(context)`
 			: JSON.stringify(service);
 	});
-
-const isServiceExists = ({ data: { child: { props }}, services }) =>
-	find(props, (value) => services.includes(`${ value }.js`));
 
 const getData = (context) => {
 	const { data: { child }, config: { theme }} = context;

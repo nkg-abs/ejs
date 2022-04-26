@@ -1,13 +1,20 @@
 const { renderFile } = require('ejs');
-const { map } = require('@laufire/utils/collection');
-const { writeFileSync } = require('fs');
 const { Glob } = require('glob');
+const { map } = require('@laufire/utils/collection');
+const { parts } = require('@laufire/utils/path');
+const { writeFileSync } = require('fs');
 
 const write = (outputFile, output) => writeFileSync(outputFile, output);
 
 const compile = (inputFile, data) => renderFile(inputFile, data);
 
 const properCase = (name) => `${ name.slice(0, 1).toUpperCase() }${ name.slice(1) }`;
+
+const camelCase = (servicePath) => {
+	const [dir, ...remainingPath] = parts(servicePath).slice(1);
+
+	return `${ dir }${ map(remainingPath, properCase).join('') }`;
+};
 
 // eslint-disable-next-line max-lines-per-function
 const renderTemplates = async (context) => {
@@ -66,6 +73,7 @@ const readServices = (context) => {
 
 module.exports = {
 	properCase,
+	camelCase,
 	renderTemplates,
 	write,
 	copyServices,
