@@ -92,6 +92,9 @@ const buildProps = ({ data: { child: { props }}, services }) =>
 			: JSON.stringify(service);
 	});
 
+const isServiceExists = ({ data: { child: { props }}, services }) =>
+	find(props, (value) => services.includes(`${ value }.js`));
+
 const getData = (context) => {
 	const { data: { child }, config: { theme }} = context;
 	const { modules, data } = context;
@@ -102,7 +105,7 @@ const getData = (context) => {
 		childCount: childCount,
 		imports: getImports(context),
 		propCount: length(props),
-		usesContext: Boolean(childCount),
+		usesContext: Boolean(childCount) || isServiceExists(context),
 		componentName: properCase(name),
 		type: modules[theme].imports[type] ? properCase(type) : type,
 		...getContent({ ...context, data: { ...data, childCount }}),
