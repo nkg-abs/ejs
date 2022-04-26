@@ -11,6 +11,7 @@ const config = {
 		},
 		default: {},
 	},
+	servicesPath: 'services',
 };
 
 module.exports = config;

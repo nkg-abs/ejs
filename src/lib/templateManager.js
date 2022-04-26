@@ -35,7 +35,7 @@ const renderTemplates = async (context) => {
 };
 
 const copyServices = (context) => {
-	const { targetPath, config, config: { content }} = context;
+	const { servicesPath, targetPath, config, config: { content }} = context;
 
 	return {
 		...context,
@@ -45,7 +45,7 @@ const copyServices = (context) => {
 				...content,
 				{
 					src: 'services',
-					dest: `${ targetPath }/src/services`,
+					dest: `${ targetPath }/src/${ servicesPath }`,
 					action: 'copy',
 				},
 			],
@@ -54,8 +54,9 @@ const copyServices = (context) => {
 };
 
 const readServices = (context) => {
-	const { found } = new Glob('services/**/*.js', { mark: true, sync: true });
-	const services = found.map((path) => path.replace('services/', ''));
+	const { servicesPath } = context;
+	const { found } = new Glob(`${ servicesPath }/**/*.js`, { mark: true, sync: true });
+	const services = found.map((path) => path.replace(`${ servicesPath }/`, ''));
 
 	return {
 		...context,
