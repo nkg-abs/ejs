@@ -1,7 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@laufire/utils': ^2.9.2
+  '@laufire/utils': ^3.0.0-0
   ejs: ^3.1.6
   eslint: ^8.12.0
   fs-extra: ^10.1.0
@@ -10,7 +10,7 @@ specifiers:
   simple-git: ^3.1.1
 
 dependencies:
-  '@laufire/utils': 2.9.2
+  '@laufire/utils': 3.0.0-0
   ejs: 3.1.6
   fs-extra: 10.1.0
   glob: 8.0.1
@@ -22,8 +22,8 @@ devDependencies:
 
 packages:
 
-  /@babel/runtime/7.17.0:
-    resolution: {integrity: sha512-etcO/ohMNaNA2UBdaXBBSX/3aEzFMRrVfaPv8Ptc0k+cWpWW0QFiGZ2XnVqQZI1Cf734LbPGmqBKWESfW4x/dQ==}
+  /@babel/runtime/7.17.9:
+    resolution: {integrity: sha512-lSiBBvodq29uShpWGNbgFdKYNiFDo5/HIYsaCEY9ff4sb10x9jizo2+pRrSyF4jKZCXqgzuqBOQKbUm90gQwJg==}
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.9
@@ -73,10 +73,10 @@ packages:
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
     dev: false
 
-  /@laufire/utils/2.9.2:
-    resolution: {integrity: sha512-faEv6RkFJujqrkcrbyDmE30VIBhm6NRAXwVhhvQgQdYFgtATOSNeyWHuHOTLyajC1JFIKPv+em3ySxxc7+GMMQ==}
+  /@laufire/utils/3.0.0-0:
+    resolution: {integrity: sha512-NQK/odg5weAAG9UqFhibSfW0BLgGcT+H7yNc82jEbqfToCyJL0SBI40pB34HqlF850IhKRUQ6uBFA6Ip6K66ww==}
     dependencies:
-      '@babel/runtime': 7.17.0
+      '@babel/runtime': 7.17.9
     optionalDependencies:
       fsevents: 2.3.2
     dev: false
