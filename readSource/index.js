@@ -2,7 +2,7 @@
 const { map } = require('@laufire/utils/collection');
 const asyncReduce = require('../src/lib/helpers');
 const {	properCase } = require('../src/lib/templateManager');
-const normalizeContent = require('./normalizeContent');
+const normalize = require('./normalize');
 const buildContent = require('./buildContent');
 const read = require('./read');
 
@@ -15,7 +15,7 @@ const buildContext = (context) => ({
 const readSource = (context) => asyncReduce([
 	buildContext,
 	read,
-	normalizeContent,
+	normalize,
 	buildContent,
 ], context);
 
