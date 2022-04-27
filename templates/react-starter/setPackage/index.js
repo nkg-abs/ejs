@@ -15,37 +15,42 @@ const appendContent = (context) => {
 	};
 };
 
-const setDependencies = (context) => {
-	const { data: { package, module: { name, version }}} = context;
-	const { dependencies } = package;
+const readPackage = ({ targetPath }) =>
+	JSON.parse(readFileSync(`./${ targetPath }/package.json`));
 
-	return {
-		...package,
-		dependencies: {
-			...dependencies,
+const writePackage = ({ name, package, data }) => ({
+	...package,
+	[name]: {
+		...package[name],
+		...data,
+	},
+});
+
+const buildPackage = (context) => {
+	const { modules, config: { theme, dependencies: packages }} = context;
+	const { name, version } = modules[theme];
+	const packageConfig = readPackage(context);
+
+	return writePackage({
+		name: 'dependencies',
+		package: packageConfig,
+		data: {
+			...packages,
 			[name]: version,
 		},
-	};
+	});
 };
 
-// eslint-disable-next-line max-lines-per-function
 const setPackage = (context) => {
-	const { modules, targetPath, config: { theme }} = context;
-	const packagePath = `./${ targetPath }/package.json`;
+	const { targetPath } = context;
 	const indentation = 2;
-
-	const package = JSON.parse(readFileSync(packagePath));
-	const updated = setDependencies({
-		...context,
-		data: { package: package, module: modules[theme] },
-	});
 
 	return appendContent({
 		...context,
 		data: {
 			path: `./${ targetPath }`,
 			output: JSON.stringify(
-				updated, null, indentation,
+				buildPackage(context), null, indentation,
 			),
 			fileName: 'package.json',
 			action: 'write',
