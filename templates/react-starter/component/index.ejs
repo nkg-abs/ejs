@@ -2,7 +2,7 @@ import { React } from 'react';
 <%- include('../partials/imports'); _%>
 
 const <%= componentName %> = (<%_ if(usesContext){ _%> context <%_ } _%>) =>
-	<<%= type %><%- include('../partials/props'); _%>>
+	<<%= type %><%- include('../partials/props'); %>>
 <%- include('../partials/children'); _%>
 	</<%= type %>>;
 

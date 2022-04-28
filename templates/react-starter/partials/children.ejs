@@ -1,6 +1,6 @@
-
-<%= textContent %>
+<%_ if (textContent) { _%>
+		<%= textContent %>
+<%_ } _%>
 <%_ map(children, ({ name }) => { _%>
-<<%= properCase(name) %> { ...context }/>
+		<<%= properCase(name) %> { ...context }/>
 <%_ }); _%>
-
