@@ -89,11 +89,11 @@ const getContent = (context) => {
 const buildProps = ({ data: { child: { props }}, services }) =>
 	map(props, (value) => {
 		const pathParts = parts(value);
-		const service = pathParts[pathParts.length - 1];
+		const leaf = pathParts[pathParts.length - 1];
 
 		return isService(services, value)
 			? `${ camelCase(value) }(context)`
-			: JSON.stringify(service);
+			: Number(leaf) ? `${ leaf }` : `'${ leaf }'`;
 	});
 
 const getData = (context) => {
