@@ -6,25 +6,31 @@ const { isIterable } = require('@laufire/utils/reflection');
 const { properCase, camelCase } = require('../../../src/lib/templateManager');
 const { parts } = require('@laufire/utils/path');
 
-const isService = (services, service) => services.includes(`${ service }.js`);
+const isService = ({ data: { value: service }, services }) =>
+	services.includes(`${ service }.js`);
 
-const isServiceExists = ({ data: { child: { props }}, services }) =>
-	find(props, (value) => isService(services, value));
+const isServiceExists = (context) => {
+	const { data: { child: { props }}} = context;
+
+	find(props, (value) => isService({ ...context, data: { value }}));
+};
 
 const addSuffix = (componentName) => `${ componentName }Child`;
 
 const findService = (acc, service) =>
 	find(acc, ({ name: serviceName }) => service === serviceName);
 
-const getPropServices = ({ data: { child: { props }}, services }) =>
-	reduce(
+const getPropServices = (context) => {
+	const { data: { child: { props }}} = context;
+
+	return reduce(
 		props, (acc, value) => {
 			const pathParts = parts(value).slice(1);
 			const name = pathParts[pathParts.length - 1];
 
 			return [
 				...acc,
-				...isService(services, value)
+				...isService({ ...context, data: { value }})
 					? [{
 						modulePath: `services/${ value }`,
 						name: findService(acc, name)
@@ -35,6 +41,7 @@ const getPropServices = ({ data: { child: { props }}, services }) =>
 			];
 		}, [],
 	);
+};
 
 const getChildComponets = ({ data: { child: { name, content }}}) =>
 	isIterable(content) && reduce(
@@ -60,9 +67,9 @@ const getThemeImports = (context) => {
 };
 
 const buildServiceImports = (context) => {
-	const { data: { child: { content }}, services, servicesPath } = context;
+	const { data: { child: { content }}, servicesPath } = context;
 
-	return isService(services, content) && [{
+	return isService({ ...context, data: { value: content }}) && [{
 		modulePath: `${ servicesPath }/${ content }`,
 		name: content,
 	}];
@@ -102,15 +109,18 @@ const getContent = (context) => {
 	};
 };
 
-const buildProps = ({ data: { child: { props }}, services }) =>
-	map(props, (value) => {
+const buildProps = (context) => {
+	const { data: { child: { props }}} = context;
+
+	return map(props, (value) => {
 		const pathParts = parts(value);
 		const leaf = pathParts[pathParts.length - 1];
 
-		return isService(services, value)
+		return isService({ ...context, data: { value }})
 			? `${ camelCase(value) }(context)`
 			: Number(leaf) ? `${ leaf }` : `'${ leaf }'`;
 	});
+};
 
 const getData = (context) => {
 	const { data: { child }, config: { theme }} = context;
