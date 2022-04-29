@@ -16,7 +16,7 @@ const addSuffix = (componentName) => `${ componentName }Child`;
 const findService = (acc, service) =>
 	find(acc, ({ name: serviceName }) => service === serviceName);
 
-const getServiceImports = ({ data: { child: { props }}, services }) =>
+const getPropServices = ({ data: { child: { props }}, services }) =>
 	reduce(
 		props, (acc, value) => {
 			const pathParts = parts(value).slice(1);
@@ -26,7 +26,7 @@ const getServiceImports = ({ data: { child: { props }}, services }) =>
 				...acc,
 				...isService(services, value)
 					? [{
-						modulePath: `services/${ value }.js`,
+						modulePath: `services/${ value }`,
 						name: findService(acc, name)
 							? camelCase(value)
 							: name,
@@ -36,7 +36,7 @@ const getServiceImports = ({ data: { child: { props }}, services }) =>
 		}, [],
 	);
 
-const getChildrenImports = ({ data: { child: { name, content }}}) =>
+const getChildComponets = ({ data: { child: { name, content }}}) =>
 	isIterable(content) && reduce(
 		content, (acc, { name: childName }) => [
 			...acc,
@@ -59,11 +59,27 @@ const getThemeImports = (context) => {
 	}];
 };
 
+const buildServiceImports = (context) => {
+	const { data: { child: { content }}, services, servicesPath } = context;
+
+	return isService(services, content) && [{
+		modulePath: `${ servicesPath }/${ content }`,
+		name: content,
+	}];
+};
+
+const getContentServices = (context) => {
+	const { data: { child: { content }}} = context;
+
+	return !isIterable(content) && buildServiceImports(context);
+};
+
 const getImports = (context) =>
 	map([
-		getChildrenImports,
+		getChildComponets,
 		getThemeImports,
-		getServiceImports,
+		getPropServices,
+		getContentServices,
 	], (fn) => fn(context) || []).flat();
 
 const getContent = (context) => {
