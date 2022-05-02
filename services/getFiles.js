@@ -1,5 +1,5 @@
 import { Glob } from 'glob';
 
-const getFiles = () => new Glob('', { mark: true, sync: true });
+const getFiles = () => new Glob('.js', { mark: true, sync: true });
 
 export default getFiles;
