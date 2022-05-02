@@ -108,11 +108,18 @@ const getImports = (context) => {
 	return totalImports;
 };
 
-const buildTextContent = (context) => {
-	const { imports, data: { child: { content }}} = context;
-	const hasAlias = find(imports, ({ identifire }) => identifire === content);
+const getAlias = (context) => {
+	const { data, imports } = context;
+	const alias = find(imports, ({ identifire }) =>	identifire === data);
 
-	return hasAlias ? `{ ${ hasAlias.name }(context) }` : content;
+	return alias && alias.name;
+};
+
+const buildTextContent = (context) => {
+	const { data: { child: { content }}} = context;
+	const aliasName = getAlias({ ...context, data: content });
+
+	return aliasName ? `{ ${ aliasName }(context) }` : content;
 };
 
 // eslint-disable-next-line complexity
@@ -144,9 +151,10 @@ const buildProps = (context) => {
 	return map(props, (value) => {
 		const pathParts = parts(value);
 		const leaf = pathParts[pathParts.length - 1];
+		const aliasName = getAlias({ ...context, data: value });
 
-		return isService({ ...context, data: { value }})
-			? `${ camelCase(value) }(context)`
+		return aliasName
+			? `${ aliasName }(context)`
 			: Number(leaf) ? `${ leaf }` : `'${ leaf }'`;
 	});
 };
@@ -156,17 +164,17 @@ const getData = (context) => {
 	const { modules, data } = context;
 	const { content, props, name, type } = child;
 	const childCount = isIterable(content) ? length(content) : 0;
-	const imports = getImports(context);
+	const builtContext = getImports(context);
 
 	return {
 		childCount: childCount,
-		...imports,
+		...builtContext,
 		propCount: length(props),
 		usesContext: Boolean(childCount) || isServiceExists(context),
 		componentName: properCase(name),
 		type: modules[theme].imports[type] ? properCase(type) : type,
-		...getContent({ ...imports, data: { ...data, childCount }}),
-		props: buildProps(context),
+		...getContent({ ...builtContext, data: { ...data, childCount }}),
+		props: buildProps(builtContext),
 	};
 };
 
