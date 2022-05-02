@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 const {
 	reduce, filter,
 	map, find, length,
@@ -12,7 +13,7 @@ const isService = ({ data: { value: service }, services }) =>
 const isServiceExists = (context) => {
 	const { data: { child: { props }}} = context;
 
-	find(props, (value) => isService({ ...context, data: { value }}));
+	return find(props, (value) => isService({ ...context, data: { value }}));
 };
 
 const addSuffix = (componentName) => `${ componentName }Child`;
@@ -20,10 +21,37 @@ const addSuffix = (componentName) => `${ componentName }Child`;
 const findService = (acc, service) =>
 	find(acc, ({ name: serviceName }) => service === serviceName);
 
-const getPropServices = (context) => {
-	const { data: { child: { props }}} = context;
+const getComponentImports = ({ data: { child: { name, content }}}) =>
+	reduce(
+		content, (acc, { name: childName }) => [
+			...acc,
+			{
+				modulePath: `./${ childName }`,
+				name: `${ properCase(childName === name ? addSuffix(childName) : childName) }`,
+			},
+		], [],
+	);
 
-	return reduce(
+const getThemeImports = (context) => {
+	const { config: { theme }, modules, imports } = context;
+	const { data: { child: { type }}} = context;
+
+	const typeExists = modules[theme].imports[type];
+
+	const results = typeExists
+		? [{
+			modulePath: typeExists,
+			name: properCase(type),
+		}]
+		: [];
+
+	return { ...context, imports: [...imports, ...results] };
+};
+
+const getPropServices = (context) => {
+	const { data: { child: { props }}, imports } = context;
+
+	const results = reduce(
 		props, (acc, value) => {
 			const pathParts = parts(value).slice(1);
 			const name = pathParts[pathParts.length - 1];
@@ -36,65 +64,66 @@ const getPropServices = (context) => {
 						name: findService(acc, name)
 							? camelCase(value)
 							: name,
+						identifire: value,
 					}]
 					: [],
 			];
 		}, [],
 	);
+
+	return { ...context, imports: [...imports, ...results] };
 };
 
-const getChildComponets = ({ data: { child: { name, content }}}) =>
-	isIterable(content) && reduce(
-		content, (acc, { name: childName }) => [
-			...acc,
-			{
-				modulePath: `./${ childName }`,
-				name: `${ properCase(childName === name ? addSuffix(childName) : childName) }`,
-			},
-		], [],
-	);
+const getContentService = (context) => {
+	const { data: { child: { content }}, imports } = context;
+	const pathParts = parts(content).slice(1);
+	const name = pathParts[pathParts.length - 1];
 
-const getThemeImports = (context) => {
-	const { config: { theme }, modules } = context;
-	const { data: { child: { type }}} = context;
-
-	const typeExists = modules[theme].imports[type];
-
-	return typeExists && [{
-		modulePath: typeExists,
-		name: properCase(type),
-	}];
+	return find(imports, ({ identifire }) => name === identifire)
+		? []
+		: isService({ ...context, data: { value: content }})
+			? [{
+				modulePath: `services/${ content }`,
+				name: name,
+				identifire: content,
+			}]
+			:	[];
 };
 
-const buildServiceImports = (context) => {
-	const { data: { child: { content }}, servicesPath } = context;
+const getChildImports = (context) => {
+	const { data: { child: { content }}, imports } = context;
 
-	return isService({ ...context, data: { value: content }}) && [{
-		modulePath: `${ servicesPath }/${ content }`,
-		name: content,
-	}];
+	const results = isIterable(content)
+		? getComponentImports(context)
+		: getContentService(context);
+
+	return { ...context, imports: [...imports, ...results] };
 };
 
-const getContentServices = (context) => {
-	const { data: { child: { content }}} = context;
+const getImports = (context) => {
+	const child = getPropServices({ ...context, imports: [] });
+	const result = getChildImports(child);
+	const totalImports = getThemeImports(result);
 
-	return !isIterable(content) && buildServiceImports(context);
+	return totalImports;
 };
 
-const getImports = (context) =>
-	map([
-		getChildComponets,
-		getThemeImports,
-		getPropServices,
-		getContentServices,
-	], (fn) => fn(context) || []).flat();
+const buildTextContent = (context) => {
+	const { imports, data: { child: { content }}} = context;
+	const hasAlias = find(imports, ({ identifire }) => identifire === content);
 
+	return hasAlias ? `{ ${ hasAlias.name }(context) }` : content;
+};
+
+// eslint-disable-next-line complexity
 const getContent = (context) => {
 	const { data: { child, childCount }} = context;
 	const { content, name } = child;
 
 	return {
-		textContent: childCount ? '' : content,
+		textContent: childCount
+			? ''
+			: buildTextContent(context),
 		children: childCount
 			? {
 				...filter(content, (config, childName) => childName !== name),
@@ -127,15 +156,16 @@ const getData = (context) => {
 	const { modules, data } = context;
 	const { content, props, name, type } = child;
 	const childCount = isIterable(content) ? length(content) : 0;
+	const imports = getImports(context);
 
 	return {
 		childCount: childCount,
-		imports: getImports(context),
+		...imports,
 		propCount: length(props),
 		usesContext: Boolean(childCount) || isServiceExists(context),
 		componentName: properCase(name),
 		type: modules[theme].imports[type] ? properCase(type) : type,
-		...getContent({ ...context, data: { ...data, childCount }}),
+		...getContent({ ...imports, data: { ...data, childCount }}),
 		props: buildProps(context),
 	};
 };
