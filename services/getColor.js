@@ -1,3 +1,3 @@
 const getColor = () => '#fff';
 
-module.exports = getColor;
+export default getColor;
