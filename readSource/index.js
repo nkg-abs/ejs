@@ -1,6 +1,6 @@
 
 const { map } = require('@laufire/utils/collection');
-const asyncReduce = require('../src/lib/helpers');
+const { asyncReduce } = require('../src/lib/helpers');
 const {	properCase } = require('../src/lib/templateManager');
 const normalize = require('./normalize');
 const buildContent = require('./buildContent');
