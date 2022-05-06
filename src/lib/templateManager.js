@@ -1,8 +1,8 @@
 const { renderFile } = require('ejs');
-const { Glob } = require('glob');
-const { map } = require('@laufire/utils/collection');
+const { map, reduce } = require('@laufire/utils/collection');
 const { parts } = require('@laufire/utils/path');
 const { writeFileSync } = require('fs');
+const { readFile, tranformPath } = require('./helpers');
 
 const write = (outputFile, output) => writeFileSync(outputFile, output);
 
@@ -60,16 +60,17 @@ const copyServices = (context) => {
 	};
 };
 
-const readServices = (context) => {
-	const { servicesPath } = context;
-	const { found } = new Glob(`${ servicesPath }/**/*.js`, { mark: true, sync: true });
-	const services = found.map((path) => path.replace(`${ servicesPath }/`, ''));
+const readDir = (context) => reduce(
+	['servicesPath', 'componentsPath'], (acc, value) => {
+		const path = acc[value];
+		const dir = value.replace('Path', '');
 
-	return {
-		...context,
-		services,
-	};
-};
+		return {
+			...acc,
+			[dir]: tranformPath(readFile(path), dir),
+		};
+	}, context,
+);
 
 module.exports = {
 	properCase,
@@ -77,5 +78,5 @@ module.exports = {
 	renderTemplates,
 	write,
 	copyServices,
-	readServices,
+	readDir,
 };
