@@ -60,17 +60,21 @@ const copyServices = (context) => {
 	};
 };
 
-const readDir = (context) => reduce(
-	['servicesPath', 'componentsPath'], (acc, value) => {
-		const path = acc[value];
-		const dir = value.replace('Path', '');
+const readDir = (context) => {
+	const { read } = context;
 
-		return {
-			...acc,
-			[dir]: tranformPath(readFile(path), dir),
-		};
-	}, context,
-);
+	return {
+		...context,
+		...reduce(
+			read, (
+				acc, path, key,
+			) => ({
+				...acc,
+				[key]: tranformPath(readFile(path), key),
+			}), context,
+		),
+	};
+};
 
 module.exports = {
 	properCase,

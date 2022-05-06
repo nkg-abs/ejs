@@ -11,8 +11,10 @@ const config = {
 		},
 		default: {},
 	},
-	servicesPath: 'services',
-	componentsPath: 'components',
+	read: {
+		services: 'services',
+		components: 'components',
+	},
 };
 
 module.exports = config;
