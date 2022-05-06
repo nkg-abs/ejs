@@ -1,4 +1,4 @@
-const asyncReduce = require('../src/lib/helpers');
+const { asyncReduce } = require('../src/lib/helpers');
 const normalizeContent = require('./normalizeContent');
 const normalizeTheme = require('./normalizeTheme');
 
