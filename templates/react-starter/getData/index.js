@@ -6,6 +6,7 @@ const {
 const { isIterable } = require('@laufire/utils/reflection');
 const { properCase, camelCase } = require('../../../src/lib/templateManager');
 const { parts } = require('@laufire/utils/path');
+const { isCustomComponent } = require('../helpers');
 
 const isService = ({ data: { value: service }, services }) =>
 	services.includes(`${ service }.js`);
@@ -21,26 +22,29 @@ const addSuffix = (componentName) => `${ componentName }Child`;
 const findService = (acc, service) =>
 	find(acc, ({ name: serviceName }) => service === serviceName);
 
-const getComponentImports = ({ data: { child: { name, content }}}) =>
-	reduce(
-		content, (acc, { name: childName }) => [
+const getComponentImports = (context) => {
+	const { data: { child: { name, content }}} = context;
+
+	return reduce(
+		content, (acc, { name: childName, type }) => [
 			...acc,
 			{
-				modulePath: `./${ childName }`,
+				modulePath: isCustomComponent({ ...context, data: type }) ? `components/${ type }` : `./${ childName }`,
 				name: `${ properCase(childName === name ? addSuffix(childName) : childName) }`,
 			},
 		], [],
 	);
+};
 
 const getThemeImports = (context) => {
 	const { config: { theme }, modules, imports } = context;
 	const { data: { child: { type }}} = context;
 
-	const typeExists = modules[theme].imports[type];
+	const modulePath = modules[theme].imports[type];
 
-	const results = typeExists
+	const results = modulePath
 		? [{
-			modulePath: typeExists,
+			modulePath: modulePath,
 			name: properCase(type),
 		}]
 		: [];
@@ -100,13 +104,35 @@ const getChildImports = (context) => {
 	return { ...context, imports: [...imports, ...results] };
 };
 
-const getImports = (context) => {
-	const child = getPropServices({ ...context, imports: [] });
-	const result = getChildImports(child);
-	const totalImports = getThemeImports(result);
+const getCustomImports = (context) => {
+	const { data: { child: { type }}, imports } = context;
 
-	return totalImports;
+	return {
+		...context,
+		imports: [
+			...imports, {
+				modulePath: `components/${ type }`,
+				name: properCase(type),
+			},
+		],
+	};
 };
+
+const parentImport = (context) => {
+	const { data: { child: { type }}} = context;
+
+	return isCustomComponent({ ...context, data: type })
+		? getCustomImports(context)
+		: getThemeImports(context);
+};
+
+const getImports = (context) => reduce(
+	[
+		getPropServices,
+		getChildImports,
+		parentImport,
+	], (acc, fn) => fn(acc), { ...context, imports: [] },
+);
 
 const getAlias = (context) => {
 	const { data, imports } = context;

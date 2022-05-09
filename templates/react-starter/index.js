@@ -1,11 +1,12 @@
 const { reduce } = require('@laufire/utils/collection');
 const getData = require('./getData');
+const { isCustomComponent } = require('./helpers');
 
 const getFiles = (context) => {
-	const { data: { file }} = context;
+	const { data: child } = context;
 	const fileData = {
-		...file,
-		data: { ...getData({ ...context, data: { child: file }}) },
+		...child,
+		data: { ...getData({ ...context, data: { child }}) },
 	};
 
 	return [
@@ -28,7 +29,9 @@ const getTemplates = (context) => {
 	const content = reduce(
 		files, (acc, file) => [
 			...acc,
-			...getFiles({ ...context, data: { file }}),
+			...isCustomComponent({ ...context, data: file.type })
+				? []
+				: getFiles({ ...context, data: file }),
 		], [],
 	);
 
