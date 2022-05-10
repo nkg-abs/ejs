@@ -41,8 +41,9 @@ const renderTemplates = async (context) => {
 	};
 };
 
-const copyServices = (context) => {
-	const { servicesPath, targetPath, config, config: { content }} = context;
+// eslint-disable-next-line max-lines-per-function
+const copyCustomization = (context) => {
+	const { read, targetPath, config, config: { content }} = context;
 
 	return {
 		...context,
@@ -50,11 +51,18 @@ const copyServices = (context) => {
 			...config,
 			content: [
 				...content,
-				{
-					src: 'services',
-					dest: `${ targetPath }/src/${ servicesPath }`,
-					action: 'copy',
-				},
+				...reduce(
+					read, (
+						acc, dir, path,
+					) => [
+						...acc,
+						{
+							src: path,
+							dest: `${ targetPath }/src/${ dir }`,
+							action: 'copy',
+						},
+					], [],
+				),
 			],
 		},
 	};
@@ -81,6 +89,6 @@ module.exports = {
 	camelCase,
 	renderTemplates,
 	write,
-	copyServices,
+	copyCustomization,
 	readDir,
 };
