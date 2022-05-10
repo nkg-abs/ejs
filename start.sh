@@ -3,4 +3,4 @@ cd "$(dirname "$0")"
 
 rm -rf ./dist/trial/
 
-node "index.js"
+node "index.js" '../source'
