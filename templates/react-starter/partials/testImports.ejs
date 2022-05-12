@@ -1,0 +1,7 @@
+<%_ map(imports, ({ modulePath, name, type }) => { _%>
+<%_ if (type === 'function') { _%>
+import * as <%= name %> from '<%= modulePath %>';
+<%_ } else { _%>
+import <%= name %> from '<%= modulePath %>';
+<%_ } _%>
+<%_ }); _%>

@@ -1,0 +1,10 @@
+<%_ map(imports, ({ name, type }) => { _%>
+<%_ if (type === 'function') { _%>
+jest.spyOn(<%= name %>, 'default')
+.mockReturnValue(mocks.<%= name %>);
+<%_ } else { _%>
+jest.spyOn(<%= name %>, 'render')
+.mockImplementation(({ children, ...props }) =>
+<div { ...props }>{ children }</div>);
+<%_ } _%>
+<%_ }); _%>

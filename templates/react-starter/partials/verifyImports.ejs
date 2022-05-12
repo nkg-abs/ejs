@@ -1,0 +1,22 @@
+<%_ map(imports, ({ modulePath, name, type }) => { _%>
+<%_ if (type === 'function') { _%>
+<%_ map(children, ({ name: contentName }) => { _%>
+<%_ if (name === properCase(contentName)) { _%>
+expect(<%= name %>.default)
+.toHaveBeenCalledWith(context, expect.any(Object));
+<%_ } else { _%>
+expect(<%= name %>.default)
+.toHaveBeenCalledWith(context);
+<%_ } _%>
+<%_ }); _%>
+<%_ } else { _%>
+expect(<%= name %>.render)
+.toHaveBeenCalledWith(expect.objectContaining({
+	<%_ if(propCount){ _%>
+		<%_ map(props, (value, name) => { _%>
+			<%= name %>: <%- value %>,
+		<%_ }); _%>
+	<% } _%>
+}), null);
+<%_ } _%>
+<%_ }); _%>

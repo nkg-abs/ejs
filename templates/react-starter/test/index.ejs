@@ -1,16 +1,21 @@
-/* eslint-disable react/display-name */
-<%- include('../partials/mocks') %>
 import { render } from '@testing-library/react';
 import <%= componentName %> from '.';
+<%- include('../partials/testImports') _%>
 
 describe('<%= componentName %>', () => {
 	test('renders the component appropriately', () => {
-		const component = render(<%= componentName %>());
+		<%_ if (usesContext) { _%>
+		const context = {};
+		<%_ } _%>
+		<%- include('../partials/mocks') _%>
+
+		<%- include('../partials/spy') _%>
+		const component = render(<%= componentName %>(<%_ if(usesContext){ _%> context <%_ } _%>));
 		const {
 			container: { children: [rootElement] },
 		} = component;
 
 		expect(rootElement).toBeInTheDocument();
-		<%- include('../partials/verifyMocks') _%>
+		<%- include('../partials/verifyImports') _%>
 	});
 });
