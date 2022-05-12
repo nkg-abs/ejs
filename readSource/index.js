@@ -8,7 +8,7 @@ const read = require('./read');
 
 const buildContext = (context) => ({
 	...context,
-	localPath: process.argv[2] || 'dist/source',
+	localPath: 'dist/source' || process.argv[2],
 	lib: { map, properCase },
 });
 
