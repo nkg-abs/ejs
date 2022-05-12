@@ -23,7 +23,8 @@ const findService = (acc, service) =>
 	find(acc, ({ name: serviceName }) => service === serviceName);
 
 const getComponentImports = (context) => {
-	const { data: { child: { name, content }}} = context;
+	const { data: { child: { name, content }}, config } = context;
+	const { customizations: { components: { type: importType }}} = config;
 
 	return reduce(
 		content, (acc, { name: childName, type }) => [
@@ -31,6 +32,7 @@ const getComponentImports = (context) => {
 			{
 				modulePath: isCustomComponent({ ...context, data: type }) ? `components/${ type }` : `./${ childName }`,
 				name: `${ properCase(childName === name ? addSuffix(childName) : childName) }`,
+				type: importType,
 			},
 		], [],
 	);
@@ -46,6 +48,7 @@ const getThemeImports = (context) => {
 		? [{
 			modulePath: modulePath,
 			name: properCase(type),
+			type: modules[theme].componentType,
 		}]
 		: [];
 
@@ -53,7 +56,8 @@ const getThemeImports = (context) => {
 };
 
 const getPropServices = (context) => {
-	const { data: { child: { props }}, imports } = context;
+	const { data: { child: { props }}, imports, config } = context;
+	const { customizations: { services: { type: serviceType }}} = config;
 
 	const results = reduce(
 		props, (acc, value) => {
@@ -69,6 +73,7 @@ const getPropServices = (context) => {
 							? camelCase(value)
 							: name,
 						identifire: value,
+						type: serviceType,
 					}]
 					: [],
 			];
@@ -79,7 +84,9 @@ const getPropServices = (context) => {
 };
 
 const getContentService = (context) => {
-	const { data: { child: { content }}, imports } = context;
+	const { data: { child: { content }}, imports, config } = context;
+	const { customizations: { services: { type: serviceType }}} = config;
+
 	const pathParts = parts(content).slice(1);
 	const name = pathParts[pathParts.length - 1];
 
@@ -90,6 +97,7 @@ const getContentService = (context) => {
 				modulePath: `services/${ content }`,
 				name: name,
 				identifire: content,
+				type: serviceType,
 			}]
 			:	[];
 };
@@ -113,6 +121,7 @@ const getCustomImports = (context) => {
 			...imports, {
 				modulePath: `components/${ type }`,
 				name: properCase(type),
+				type: 'function',
 			},
 		],
 	};

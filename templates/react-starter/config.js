@@ -4,6 +4,7 @@ const config = {
 		material: {
 			version: '4.12.4',
 			name: '@material-ui/core',
+			componentType: 'class',
 			imports: {
 				box: '@material-ui/core/Box',
 				button: '@material-ui/core/Button',
