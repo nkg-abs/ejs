@@ -1,10 +1,12 @@
 const { renderFile } = require('ejs');
 const { map, reduce } = require('@laufire/utils/collection');
 const { parts } = require('@laufire/utils/path');
-const { writeFileSync } = require('fs');
+const { writeFileSync, readFileSync } = require('fs');
 const { readFile, tranformPath } = require('./helpers');
 
 const write = (outputFile, output) => writeFileSync(outputFile, output);
+
+const read = ({ data }) => readFileSync(data, 'utf8');
 
 const compile = (inputFile, data) => renderFile(inputFile, data);
 
@@ -85,6 +87,25 @@ const readDir = (context) => {
 	};
 };
 
+const updateEntry = (context) => {
+	const { config, config: { content }, targetPath } = context;
+
+	return {
+		...context,
+		config: {
+			...config,
+			content: content.concat({
+				action: 'write',
+				output: read({ ...context, data: `${ targetPath }/src/index.js` })
+					.replace('import App from \'./App\';',
+						'import App from \'./app\';'),
+				fileName: 'index.js',
+				path: `${ targetPath }/src/`,
+			}),
+		},
+	};
+};
+
 module.exports = {
 	properCase,
 	camelCase,
@@ -92,4 +113,6 @@ module.exports = {
 	write,
 	copyCustomization,
 	readDir,
+	read,
+	updateEntry,
 };

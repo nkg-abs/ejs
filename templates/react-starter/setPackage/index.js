@@ -1,4 +1,4 @@
-const { readFileSync } = require('fs');
+const { read } = require('../../../src/lib/templateManager');
 
 const appendContent = (context) => {
 	const { data, config: { content }, config } = context;
@@ -15,8 +15,6 @@ const appendContent = (context) => {
 	};
 };
 
-const readPackage = ({ targetPath }) =>
-	JSON.parse(readFileSync(`./${ targetPath }/package.json`));
 
 const writePackage = ({ name, package, data }) => ({
 	...package,
@@ -27,9 +25,10 @@ const writePackage = ({ name, package, data }) => ({
 });
 
 const buildPackage = (context) => {
-	const { modules, config: { theme, dependencies: packages }} = context;
+	const { modules, config, targetPath } = context;
+	const { theme, dependencies: packages } = config;
 	const { name, version } = modules[theme];
-	const packageConfig = readPackage(context);
+	const packageConfig = JSON.parse(read({ ...context, data: `./${ targetPath }/package.json`}));
 
 	return writePackage({
 		name: 'dependencies',
