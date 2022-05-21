@@ -12,7 +12,7 @@ const read = async (context) => {
 	);
 	const config = require(`../${ localPath }/config`);
 	const { name } = config;
-	const targetPath = `dist/${ name }`;
+	const targetPath = `../${ name }`;
 
 	return { ...context, config, details, targetPath };
 };
