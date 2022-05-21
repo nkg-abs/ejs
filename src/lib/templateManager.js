@@ -41,9 +41,21 @@ const renderTemplates = async (context) => {
 	};
 };
 
-// eslint-disable-next-line max-lines-per-function
+const getFileDetails = ({ read, targetPath }) => reduce(
+	read, (
+		acc, dir, path,
+	) => [
+		...acc,
+		{
+			src: path,
+			dest: `${ targetPath }/src/${ dir }`,
+			action: 'copy',
+		},
+	], [],
+);
+
 const copyCustomization = (context) => {
-	const { read, targetPath, config, config: { content }} = context;
+	const { config, config: { content }} = context;
 
 	return {
 		...context,
@@ -51,18 +63,7 @@ const copyCustomization = (context) => {
 			...config,
 			content: [
 				...content,
-				...reduce(
-					read, (
-						acc, dir, path,
-					) => [
-						...acc,
-						{
-							src: path,
-							dest: `${ targetPath }/src/${ dir }`,
-							action: 'copy',
-						},
-					], [],
-				),
+				...getFileDetails(context),
 			],
 		},
 	};

@@ -151,21 +151,22 @@ const getAlias = (context) => {
 };
 
 const buildTextContent = (context) => {
-	const { data: { child: { content }}} = context;
+	const { data: { child: { content }, childCount }} = context;
 	const aliasName = getAlias({ ...context, data: content });
 
-	return aliasName ? `{ ${ aliasName }(context) }` : content;
+	return childCount
+		? ''
+		: aliasName
+			? `{ ${ aliasName }(context) }`
+			: content;
 };
 
-// eslint-disable-next-line complexity
 const getContent = (context) => {
 	const { data: { child, childCount }} = context;
 	const { content, name } = child;
 
 	return {
-		textContent: childCount
-			? ''
-			: buildTextContent(context),
+		textContent: buildTextContent(context),
 		children: childCount
 			? {
 				...filter(content, (config, childName) => childName !== name),
