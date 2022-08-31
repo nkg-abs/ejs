@@ -1,10 +1,6 @@
-const normalizeTheme = (context) => {
-	const { theme } = context;
-
-	return {
-		...context,
-		theme: theme || 'default',
-	};
-};
+const normalizeTheme = (context) => ({
+	...context,
+	theme: context.theme || 'default',
+});
 
 module.exports = normalizeTheme;

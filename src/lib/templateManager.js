@@ -43,8 +43,8 @@ const renderTemplates = async (context) => {
 	};
 };
 
-const getFileDetails = ({ read, targetPath }) => reduce(
-	read, (
+const getFileDetails = ({ read: files, targetPath }) => reduce(
+	files, (
 		acc, dir, path,
 	) => [
 		...acc,
@@ -72,12 +72,12 @@ const copyCustomization = (context) => {
 };
 
 const readDir = (context) => {
-	const { read } = context;
+	const { read: files } = context;
 
 	return {
 		...context,
 		...reduce(
-			read, (
+			files, (
 				acc, path, key,
 			) => ({
 				...acc,
