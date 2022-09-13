@@ -5,6 +5,7 @@ const {	properCase } = require('../src/lib/templateManager');
 const normalize = require('./normalize');
 const buildContent = require('./buildContent');
 const read = require('./read');
+const buildSeed = require('./buildSeed');
 
 const buildContext = (context) => ({
 	...context,
@@ -16,6 +17,7 @@ const readSource = (context) => asyncReduce([
 	buildContext,
 	read,
 	normalize,
+	buildSeed,
 	buildContent,
 ], context);
 
