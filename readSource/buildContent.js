@@ -45,7 +45,13 @@ const buildContent = (context) => {
 		...context,
 		config: {
 			...config,
-			content: getContent({ ...context, data: { content: content, parentKey: `${ parentKey }/src` }}),
+			content: getContent({
+				...context,
+				data: {
+					content: content,
+					parentKey: `${ parentKey }/src`,
+				},
+			}),
 		},
 	};
 };

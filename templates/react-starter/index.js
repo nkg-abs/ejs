@@ -1,4 +1,4 @@
-const { reduce } = require('@laufire/utils/collection');
+const {	reduce, filter } = require('@laufire/utils/collection');
 const getData = require('./getData');
 const { isCustomComponent } = require('./helpers');
 
@@ -25,13 +25,13 @@ const getFiles = (context) => {
 
 const getTemplates = (context) => {
 	const { config: { content: files }, config } = context;
+	const dynamicFiles = filter(files, (file) =>
+		!isCustomComponent({ ...context, data: file.type }));
 
 	const content = reduce(
-		files, (acc, file) => [
+		dynamicFiles, (acc, file) => [
 			...acc,
-			...isCustomComponent({ ...context, data: file.type })
-				? []
-				: getFiles({ ...context, data: file }),
+			...getFiles({ ...context, data: file }),
 		], [],
 	);
 
