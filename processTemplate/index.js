@@ -2,7 +2,7 @@ const { asyncReduce } = require('../src/lib/helpers');
 const prepareBase = require('../src/lib/prepareBase');
 const {
 	renderTemplates, copyCustomization, readDir,
-	updateEntry,
+	updateEntry, setSeed,
 } = require('../src/lib/templateManager');
 
 const processTemplate = (context) => {
@@ -15,6 +15,7 @@ const processTemplate = (context) => {
 		prepareBase,
 		readDir,
 		getTemplates,
+		setSeed,
 		renderTemplates,
 		setPackage,
 		copyCustomization,

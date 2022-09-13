@@ -3,6 +3,7 @@ const { map, reduce } = require('@laufire/utils/collection');
 const { parts } = require('@laufire/utils/path');
 const { writeFileSync, readFileSync } = require('fs');
 const { readFile, tranformPath } = require('./helpers');
+const util = require('util');
 
 const write = (outputFile, output) => writeFileSync(outputFile, output);
 
@@ -106,6 +107,26 @@ const updateEntry = (context) => {
 	};
 };
 
+const setSeed = (context) => {
+	const { config, config: { seed, content }, targetPath } = context;
+
+	return {
+		...context,
+		config: {
+			...config,
+			content: [
+				...content,
+				{
+					outputPath: `${ targetPath }/src/core/`,
+					fileName: 'seed.js',
+					template: 'partials/seed.ejs',
+					data: { data: util.inspect(seed, { compact: false }) },
+				},
+			],
+		},
+	};
+};
+
 module.exports = {
 	properCase,
 	camelCase,
@@ -115,4 +136,5 @@ module.exports = {
 	readDir,
 	read,
 	updateEntry,
+	setSeed,
 };
