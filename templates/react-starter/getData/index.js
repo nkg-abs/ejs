@@ -99,7 +99,7 @@ const getContentService = (context) => {
 				identifire: content,
 				type: serviceType,
 			}]
-			:	[];
+			: [];
 };
 
 const getChildImports = (context) => {
