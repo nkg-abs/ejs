@@ -26,7 +26,8 @@ const getFiles = (context) => {
 const getTemplates = (context) => {
 	const { config: { content: files }, config } = context;
 	const dynamicFiles = filter(files, (file) =>
-		!isCustomComponent({ ...context, data: file.type }));
+		!isCustomComponent({ ...context, data: file.type })
+		&& file.type !== 'simple');
 
 	const content = reduce(
 		dynamicFiles, (acc, file) => [
