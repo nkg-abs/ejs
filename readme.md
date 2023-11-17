@@ -7,4 +7,6 @@
 * pass entire file in getTemplates.isCustomComponent.
 
 ## start
-* change the path to config file(simple-ui) in start.sh
+* change the path to config file(simple-ui) relative to ./dist in start.sh
+* change the output repo name in config.name.
+* output always created sibiling to the ejs repo.
